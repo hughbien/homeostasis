@@ -64,7 +64,7 @@ class Homeostasis::Asset < Stasis::Plugin
     else
       orig = self.class.mapping.invert[dest]
       raise "Asset not found: #{dest}" if orig.nil?
-      full_orig = File.join(@_stasis.root, orig)
+      full_orig = File.join(@stasis.root, orig)
       self.class.stamped(path, self.class.version(full_orig))
     end
   end
