@@ -10,6 +10,7 @@ class Homeostasis::Asset < Stasis::Plugin
     @@matcher = /\.(jpg|png|gif|css|js)/i
     @@mapping = {}
     @@concats = {}
+    @@concats_pre = {}
   end
 
   def before_all
@@ -22,7 +23,7 @@ class Homeostasis::Asset < Stasis::Plugin
       @@mapping[relative] = dest
     end
     imapping = @@mapping.invert
-    @@concats.each do |dest, files|
+    @@concats_pre.each do |dest, files|
       full_origs = files.map do |file|
         orig = imapping[file]
         raise "Asset not found #{file}" if orig.nil?
@@ -97,7 +98,7 @@ class Homeostasis::Asset < Stasis::Plugin
   end
 
   def self.concat(dest, files)
-    @@concats[dest] = files
+    @@concats_pre[dest] = files
   end
 
   def self.concats
