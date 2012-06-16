@@ -16,6 +16,7 @@ class Homeostasis::Asset < Stasis::Plugin
 
   def before_all
     @stasis.paths.each do |path|
+      next if ignore?(path)
       relative = path[(@stasis.root.length+1)..-1]
       ext = Tilt.mappings.keys.find { |ext| File.extname(path)[1..-1] == ext }
       dest = (ext && File.extname(relative) == ".#{ext}") ?
@@ -104,6 +105,21 @@ class Homeostasis::Asset < Stasis::Plugin
 
   def self.concats
     @@concats
+  end
+
+  private
+  def ignore?(path)
+    @ignore_paths ||= @stasis.plugins.
+      find { |plugin| plugin.class == Stasis::Ignore }.
+      instance_variable_get(:@ignore)
+
+    matches = _match_key?(@ignore_paths, path)
+    matches.each do |group|
+      group.each do |group_path|
+        return true if _within?(group_path)
+      end
+    end
+    false
   end
 end
 
