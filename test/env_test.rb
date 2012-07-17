@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis', 'env')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis', 'env'))
 require 'minitest/autorun'
 
 class EnvTest < MiniTest::Unit::TestCase

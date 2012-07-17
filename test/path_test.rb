@@ -1,7 +1,9 @@
 require 'rubygems'
 require 'stasis'
-require File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis', 'path')
 require 'minitest/autorun'
+
+Stasis.new(File.expand_path(File.join(File.dirname(__FILE__), 'fixture')))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis', 'path'))
 
 class PathTest < MiniTest::Unit::TestCase
   def setup

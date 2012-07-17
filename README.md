@@ -76,6 +76,12 @@ The path helper uses the environment handler.  It just adds the view helper
 This goes along well with an `htaccess` file that drops the `.html` extensions
 from requests and adds trailing slashes.
 
+TODO
+====
+
+* routing support
+* yaml front matter support
+
 License
 =======
 

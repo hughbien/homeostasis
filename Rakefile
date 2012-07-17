@@ -1,6 +1,13 @@
 require File.expand_path('lib/homeostasis', File.dirname(__FILE__))
 
-task :default => :build
+task :default => :test
+
+task :test do
+  filenames = ENV['TEST'] ? ENV['TEST'].split(' ') : Dir.glob('test/*_test.rb')
+  filenames.each do |filename|
+    require File.expand_path(filename)
+  end
+end
 
 task :build do
   `gem build homeostasis.gemspec`
