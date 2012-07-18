@@ -1,8 +1,8 @@
 Description
 ===========
 
-Stasis plugin for asset stamping with git revisions, environment branching,
-and uri helpers.
+Stasis plugin for asset stamping with git revisions, yaml front-matter,
+environment branching, and uri helpers.
 
 Installation
 ============
@@ -13,13 +13,14 @@ In your controller:
 
     require 'rubygems'
     require 'homeostasis/asset'   # for asset stamping
+    require 'homeostasis/front'   # for yaml front-matter
     require 'homeostasis/env'     # for environment handler
     require 'homeostasis/path'    # for path helpers
 
 Each component is optional.
 
-Usage
-=====
+Asset Stamping
+==============
 
 By default, assets matching `/\.(jpg|png|gif|css|js)$/i` will be stamped.
 So if your root directory is like this:
@@ -58,6 +59,9 @@ You can even concat your assets into a single file:
     %link{:href => asset_path('all.css')}
     %script{:src => asset_path('all.js')}
 
+Environment Handler
+===================
+
 The environment handler just adds a variable:
 
     Homeostasis::ENV
@@ -66,6 +70,26 @@ It's set to whatever `HOMEOSTASIS_ENV` or `'development'` by default.  You
 can use this to branch in your view:
 
     = Homeostasis::ENV.development? ? 'local.js' : 'production.js'
+
+YAML Front-matter
+=================
+
+This adds YAML front-matter support for haml files:
+
+    #!
+      :title: Lorem Ipsum
+      :desc:  Quick fox over lazy dog.
+    %div
+      Page continues as normal here
+    %h1= front[:title]
+    %p= front[:desc]
+
+Just start the file with YAML inside a HAML comment.  The data will be available
+from the `front` method in your views and controller.  There's also a
+`front_site` helper which contains the data for all pages for cross-page access.
+
+Path Helper
+===========
 
 The path helper uses the environment handler.  It just adds the view helper
 `path` which returns differently depending on the environment:
@@ -80,7 +104,7 @@ TODO
 ====
 
 * routing support
-* yaml front matter support
+* yaml front matter support for markdown
 
 License
 =======
