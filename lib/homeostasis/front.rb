@@ -13,9 +13,9 @@ class Homeostasis::Front < Stasis::Plugin
 
   def before_all
     @stasis.paths.each do |path|
-      next if ignore?(path) || path !~ /\.haml$/
+      next if ignore?(path)
       contents = File.read(path)
-      next if contents !~ /^-#/
+      next if contents !~ /^-#|^<!--|^<%#/
 
       lines, data, index = contents.split("\n"), "", 1
       while index < lines.size
@@ -25,9 +25,10 @@ class Homeostasis::Front < Stasis::Plugin
       end
       
       begin
-        @front_site[front_key(path)] = YAML.load(data)
+        yaml = YAML.load(data)
+        @front_site[front_key(path)] = yaml if yaml.is_a?(Hash)
       rescue Psych::SyntaxError => error
-        puts "#{path}: #{error.message}"
+        next
       end
     end
   end
@@ -57,7 +58,7 @@ class Homeostasis::Front < Stasis::Plugin
   end
 
   def front_key(filename)
-    File.basename(filename).sub(/\.haml$/, '').sub(/\.html$/, '').to_sym
+    filename.sub(Dir.pwd, '')[1..-1].sub(/\.[^.]+$/, '')
   end
 end
 

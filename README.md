@@ -74,7 +74,7 @@ can use this to branch in your view:
 YAML Front-matter
 =================
 
-This adds YAML front-matter support for haml files:
+This adds YAML front-matter support:
 
     #!
       :title: Lorem Ipsum
@@ -84,9 +84,18 @@ This adds YAML front-matter support for haml files:
     %h1= front[:title]
     %p= front[:desc]
 
-Just start the file with YAML inside a HAML comment.  The data will be available
-from the `front` method in your views and controller.  There's also a
-`front_site` helper which contains the data for all pages for cross-page access.
+Note the 2-space indentation is required.  This works for HTML and ERB comments
+as well:
+
+    <!--
+      :title: Lorem Ipsum
+    -->
+    Continue as normal
+
+Just start the file with YAML inside a comment with 2-space indentation.  The
+data will be available from the `front` method in your views and controller.
+There's also a `front_site` helper which contains the data for all pages for
+cross-page access.
 
 Path Helper
 ===========
@@ -99,12 +108,6 @@ The path helper uses the environment handler.  It just adds the view helper
 
 This goes along well with an `htaccess` file that drops the `.html` extensions
 from requests and adds trailing slashes.
-
-TODO
-====
-
-* routing support
-* yaml front matter support for markdown
 
 License
 =======
