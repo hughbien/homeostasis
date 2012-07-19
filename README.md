@@ -84,13 +84,22 @@ This adds YAML front-matter support:
     %h1= front[:title]
     %p= front[:desc]
 
-Note the 2-space indentation is required.  This works for HTML and ERB comments
-as well:
+Note the 2-space indentation is required.  This works for HTML, Markdown, and
+ERB comments as well:
 
     <!--
       :title: Lorem Ipsum
     -->
     Continue as normal
+
+You can configure which files to check in `controller.rb`.  Here's the default:
+
+    Homeostasis::Front.matchers = {
+      'erb'  => '<%#',
+      'haml' => '-#',
+      'html' => '<!--',
+      'md'   => '<!--'
+    }
 
 Just start the file with YAML inside a comment with 2-space indentation.  The
 data will be available from the `front` method in your views and controller.

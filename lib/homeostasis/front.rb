@@ -9,13 +9,19 @@ class Homeostasis::Front < Stasis::Plugin
   def initialize(stasis)
     @stasis = stasis
     @front_site = {}
+    @@matchers = {
+      'erb'  => '<%#',
+      'haml' => '-#',
+      'html' => '<!--',
+      'md'   => '<!--'
+    }
   end
 
   def before_all
     @stasis.paths.each do |path|
-      next if ignore?(path)
+      next if ignore?(path) || path !~ /\.(#{@@matchers.keys.join('|')})$/
       contents = File.read(path)
-      next if contents !~ /^-#|^<!--|^<%#/
+      next if contents !~ /^#{@@matchers[File.extname(path)]}/
 
       lines, data, index = contents.split("\n"), "", 1
       while index < lines.size
@@ -39,6 +45,14 @@ class Homeostasis::Front < Stasis::Plugin
 
   def front_site
     @front_site
+  end
+
+  def self.matchers
+    @@matchers
+  end
+
+  def self.matchers=(ext)
+    @@matchers = ext
   end
 
   private
