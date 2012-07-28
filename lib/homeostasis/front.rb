@@ -10,18 +10,18 @@ class Homeostasis::Front < Stasis::Plugin
     @stasis = stasis
     @front_site = {}
     @@matchers = {
-      'erb'  => '<%#',
-      'haml' => '-#',
-      'html' => '<!--',
-      'md'   => '<!--'
+      'erb'  => /<%#/,
+      'haml' => /-#/,
+      'html' => /<!--/,
+      'md'   => /<!--/
     }
   end
 
   def before_all
     @stasis.paths.each do |path|
-      next if ignore?(path) || path !~ /\.(#{@@matchers.keys.join('|')})$/
+      next if path !~ /\.(#{@@matchers.keys.join('|')})$/
       contents = File.read(path)
-      next if contents !~ /^#{@@matchers[File.extname(path)]}/
+      next if contents !~ @@matchers[File.extname(path)[1..-1]]
 
       lines, data, index = contents.split("\n"), "", 1
       while index < lines.size
@@ -56,21 +56,6 @@ class Homeostasis::Front < Stasis::Plugin
   end
 
   private
-  # TODO: extract, in common with asset plugin
-  def ignore?(path)
-    @ignore_paths ||= @stasis.plugins.
-      find { |plugin| plugin.class == Stasis::Ignore }.
-      instance_variable_get(:@ignore)
-
-    matches = _match_key?(@ignore_paths, path)
-    matches.each do |group|
-      group.each do |group_path|
-        return true if _within?(group_path)
-      end
-    end
-    false
-  end
-
   def front_key(filename)
     filename.sub(Dir.pwd, '')[1..-1].sub(/\.[^.]+$/, '')
   end
