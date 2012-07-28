@@ -13,5 +13,8 @@ class PathTest < MiniTest::Unit::TestCase
   def test_path
     assert_equal('/blog.html', @plugin.path('/blog'))
     assert_equal('blog.html', @plugin.path('blog'))
+
+    assert_equal('/rss.xml', @plugin.path('/rss', 'xml'))
+    assert_equal('rss.xml', @plugin.path('rss', 'xml'))
   end
 end

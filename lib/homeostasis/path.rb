@@ -7,10 +7,10 @@ class Homeostasis::Path < Stasis::Plugin
     @stasis = stasis
   end
 
-  def path(uri)
+  def path(uri, ext='html')
     uri = uri[0..-2] if uri =~ /\/$/
     Homeostasis::ENV.development? ?
-      "#{uri}.html" :
+      "#{uri}.#{ext}" :
       "#{uri}/"
   end
 end
