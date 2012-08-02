@@ -35,6 +35,7 @@ class Homeostasis::Front < Stasis::Plugin
       dest = (ext && File.extname(relative) == ".#{ext}") ?
         relative[0..-1*ext.length-2] :
         relative
+      dest = trailify(dest)
       
       begin
         yaml = YAML.load(data)
@@ -65,6 +66,19 @@ class Homeostasis::Front < Stasis::Plugin
   private
   def front_key(filename)
     filename.sub(Dir.pwd, '')[1..-1]
+  end
+
+  def trailify(filename)
+    @trail_included ||= @stasis.plugins.any? {|plugin| plugin.is_a?(Homeostasis::Trail)}
+    if filename == 'index.html'
+      '/'
+    elsif File.basename(filename) == 'index.html'
+      "/#{File.dirname(filename)}/"
+    elsif @trail_included
+      "/#{filename.sub(/\.html$/, '/')}"
+    else
+      "/#{filename}"
+    end
   end
 end
 
