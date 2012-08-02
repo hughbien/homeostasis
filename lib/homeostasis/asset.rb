@@ -2,8 +2,8 @@ require File.join(File.dirname(__FILE__), '..', 'homeostasis')
 require 'digest/sha1'
 
 class Homeostasis::Asset < Stasis::Plugin
-  before_all    :before_all
-  after_all     :after_all
+  before_all :before_all
+  after_all  :after_all
 
   def initialize(stasis)
     @stasis = stasis

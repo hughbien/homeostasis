@@ -1,8 +1,8 @@
 require 'rubygems'
 require '../lib/homeostasis/asset'
 require '../lib/homeostasis/env'
-require '../lib/homeostasis/path'
 require '../lib/homeostasis/front'
+require '../lib/homeostasis/trail'
 
 Homeostasis::Asset.concat 'all.css', %w(styles.css)
 
