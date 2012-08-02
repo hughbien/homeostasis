@@ -29,12 +29,19 @@ class Homeostasis::Front < Stasis::Plugin
         data += lines[index] + "\n"
         index += 1
       end
+
+      relative = path[(@stasis.root.length+1)..-1]
+      ext = Tilt.mappings.keys.find { |ext| File.extname(path)[1..-1] == ext }
+      dest = (ext && File.extname(relative) == ".#{ext}") ?
+        relative[0..-1*ext.length-2] :
+        relative
       
       begin
         yaml = YAML.load(data)
+        yaml[:path] = dest
         @front_site[front_key(path)] = yaml if yaml.is_a?(Hash)
       rescue Psych::SyntaxError => error
-        next
+        @front_site[front_key(path)] = {:path => dest}
       end
     end
   end
@@ -57,7 +64,7 @@ class Homeostasis::Front < Stasis::Plugin
 
   private
   def front_key(filename)
-    filename.sub(Dir.pwd, '')[1..-1].sub(/\.[^.]+$/, '')
+    filename.sub(Dir.pwd, '')[1..-1]
   end
 end
 

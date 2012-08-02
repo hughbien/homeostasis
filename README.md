@@ -37,13 +37,7 @@ You'll end up with something like this:
     styles.sha1.css
 
 Generated files in the `public` directory will go through a global search and
-replace.  If you want to keep an actualy filename, use the escape sequence:
-
-    \background.jpg
-
-Which will turn into:
-
-    backgorund.jpg
+replace.
 
 You can set the regex for asset matching in your controller:
 
