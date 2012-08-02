@@ -1,8 +1,7 @@
 Description
 ===========
 
-Stasis plugin for asset stamping with git revisions, yaml front-matter,
-environment branching, and uri helpers.
+Stasis plugin for asset stamping, blogs, front-matter yaml, and trailing slash.
 
 Installation
 ============
@@ -13,9 +12,9 @@ In your controller:
 
     require 'rubygems'
     require 'homeostasis/asset'   # for asset stamping
+    require 'homeostasis/blog'    # for blog support
     require 'homeostasis/front'   # for yaml front-matter
-    require 'homeostasis/env'     # for environment handler
-    require 'homeostasis/path'    # for path helpers
+    require 'homeostasis/trail'   # for trailing slashes
 
 Each component is optional.
 
@@ -37,13 +36,14 @@ You'll end up with something like this:
     script.sha1.js
     styles.sha1.css
 
-In your views, use the `asset_path` helper:
+Generated files in the `public` directory will go through a global search and
+replace.  If you want to keep an actualy filename, use the escape sequence:
 
-    %img{:src => asset_path('background.jpg')}
+    \background.jpg
 
-For CSS files, I use the extension `.erb` like `styles.css.erb`:
+Which will turn into:
 
-    background: url(<%= asset_path('background.jpg') %>);
+    backgorund.jpg
 
 You can set the regex for asset matching in your controller:
 
@@ -51,27 +51,34 @@ You can set the regex for asset matching in your controller:
 
 You can even concat your assets into a single file:
 
-    # in controller.rb
     Homeostasis::Asset.concat 'all.js', %w(jquery.js mine.js)
     Homeostasis::Asset.concat 'all.css', %w(reset.css mine.css)
 
-    # in views
-    %link{:href => asset_path('all.css')}
-    %script{:src => asset_path('all.js')}
+Blog
+====
 
-Environment Handler
-===================
+In your controller:
 
-The environment handler just adds a variable:
+    Homeostasis::Blog.create('blog') # directory of posts
 
-    Homeostasis::ENV
+Post files should be in the format `yyyy-mm-dd-permalink.html.{md,haml}` and
+have YAML front-matter:
 
-It's set to whatever `HOMEOSTASIS_ENV` or `'development'` by default.  You
-can use this to branch in your view:
+    <!--
+      :title: Title Goes Here
+    -->
 
-    = Homeostasis::ENV.development? ? 'local.js' : 'production.js'
+You'll have to create your own `blog/index.html`.  Use the `blog_posts` helper
+to construct it:
 
-YAML Front-matter
+    - blog_posts.each do |post|
+      %a{:href => post[:path]}= post[:title]
+
+Stick this in your controller for an RSS feed:
+
+    Homeostasis::Blog.rss('rss.xml')
+
+Front-Matter YAML
 =================
 
 This adds YAML front-matter support:
@@ -106,17 +113,28 @@ data will be available from the `front` method in your views and controller.
 There's also a `front_site` helper which contains the data for all pages for
 cross-page access.
 
-Path Helper
-===========
+Note that `:path` is automatically assigned if left blank.  Its value will be
+the production path to the page.  If the trailing slash plugin is included,
+the `html` extension will be lost.
 
-The path helper uses the environment handler.  It just adds the view helper
-`path` which returns differently depending on the environment:
+Trailing Slash
+==============
 
-    path('/blog')  # development => '/blog.html' 
-    path('/blog')  # production  => '/blog/' 
+This turns every page into a directory with an `index.html` file.  So instead
+of:
 
-This goes along well with an `htaccess` file that drops the `.html` extensions
-from requests and adds trailing slashes.
+    index.html
+    blog.html
+    about.html
+
+You'll get:
+
+    index.html
+    blog/index.html
+    about/index.html
+
+This works well with an `htaccess` file that automatically appends trailing
+slashes to URLs.
 
 License
 =======
