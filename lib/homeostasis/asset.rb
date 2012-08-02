@@ -69,7 +69,8 @@ class Homeostasis::Asset < Stasis::Plugin
       contents = File.read(filename)
       begin
         asset_paths.each do |old, new|
-          contents.gsub!(/([^a-zA-Z0-9.-_])#{Regexp.escape(old)}/, "\\1#{new}")
+          contents.gsub!(/([^a-zA-Z0-9\.\-_])#{Regexp.escape(old)}/, "\\1#{new}")
+          contents.gsub!(/^#{Regexp.escape(old)}/, new)
         end
         File.open(filename, 'w') {|f| f.print(contents)}
       rescue ArgumentError
