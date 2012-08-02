@@ -4,7 +4,6 @@ require 'digest/sha1'
 class Homeostasis::Asset < Stasis::Plugin
   before_all    :before_all
   after_all     :after_all
-  action_method :asset_path 
 
   def initialize(stasis)
     @stasis = stasis
@@ -36,6 +35,7 @@ class Homeostasis::Asset < Stasis::Plugin
   end
 
   def after_all
+    asset_paths = {}
     @@concats.each do |concatted, files|
       version = self.class.version(files)
       full_concatted = File.join(@stasis.destination, concatted)
@@ -50,25 +50,31 @@ class Homeostasis::Asset < Stasis::Plugin
         file_contents
       end.join("\n")
       File.open(full_concatted, 'w') {|f| f.print(content)}
+      asset_paths[concatted] = full_concatted[(@stasis.destination.length+1)..-1]
     end
     @@mapping.each do |orig, dest|
       next if dest !~ @@matcher
       full_orig = File.join(@stasis.root, orig)
       full_dest = File.join(@stasis.destination, dest)
-      version = self.class.version(full_orig)
-      File.rename(full_dest, self.class.stamped(full_dest, version))
-    end
-  end
+      versioned = self.class.stamped(full_dest, self.class.version(full_orig))
+      File.rename(full_dest, versioned)
 
-  def asset_path(path)
-    dest = path =~ /^\// ? path[1..-1] : path
-    if (concats = self.class.concats[dest])
-      self.class.stamped(path, self.class.version(concats))
-    else
-      orig = self.class.mapping.invert[dest]
-      raise "Asset not found: #{dest}" if orig.nil?
-      full_orig = File.join(@stasis.root, orig)
-      self.class.stamped(path, self.class.version(full_orig))
+      relative_dest = full_dest[(@stasis.destination.length+1)..-1]
+      relative_versioned = versioned[(@stasis.destination.length+1)..-1]
+      asset_paths[relative_dest] = relative_versioned
+    end
+    (@@mapping.values + asset_paths.values).each do |dest|
+      filename = File.join(@stasis.destination, dest)
+      next if !File.exist?(filename)
+      contents = File.read(filename)
+      begin
+        asset_paths.each do |old, new|
+          contents.gsub!(/([^a-zA-Z0-9.-_])#{Regexp.escape(old)}/, "\\1#{new}")
+        end
+        File.open(filename, 'w') {|f| f.print(contents)}
+      rescue ArgumentError
+        next
+      end
     end
   end
 
