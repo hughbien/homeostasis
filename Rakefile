@@ -1,4 +1,5 @@
-require File.expand_path('lib/homeostasis', File.dirname(__FILE__))
+ENV['HOMEOSTASIS_BUILD'] = '1'
+require File.join(File.dirname(__FILE__), 'lib', 'homeostasis')
 
 task :default => :test
 
