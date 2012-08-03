@@ -15,6 +15,7 @@ class Homeostasis::Blog < Stasis::Plugin
   end
 
   def blog_posts
+    raise 'Homeostasis::Blog#directory never set' if @@directory.nil?
     blog_dir = File.join(@stasis.root, @@directory)
     posts = []
     front_site = Homeostasis::Front._front_site
@@ -30,7 +31,7 @@ class Homeostasis::Blog < Stasis::Plugin
   end
 
   def after_all
-    raise 'Homeostasis::Blog#directory never set' if @@directory.nil?
+    return if @@directory.nil?
     blog_dir = File.join(@stasis.destination, @@directory)
     Dir.glob("#{blog_dir}/*").each do |filename|
       next if filename !~ /^\d{4}-\d{2}-\d{2}-/
