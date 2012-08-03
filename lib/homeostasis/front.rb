@@ -8,7 +8,7 @@ class Homeostasis::Front < Stasis::Plugin
 
   def initialize(stasis)
     @stasis = stasis
-    @front_site = {}
+    @@front_site = {}
     @@matchers = {
       'erb'  => /<%#/,
       'haml' => /-#/,
@@ -40,19 +40,23 @@ class Homeostasis::Front < Stasis::Plugin
       begin
         yaml = YAML.load(data)
         yaml[:path] = dest
-        @front_site[front_key(path)] = yaml if yaml.is_a?(Hash)
+        @@front_site[front_key(path)] = yaml if yaml.is_a?(Hash)
       rescue Psych::SyntaxError => error
-        @front_site[front_key(path)] = {:path => dest}
+        @@front_site[front_key(path)] = {:path => dest}
       end
     end
   end
 
   def front
-    @front_site[front_key(@stasis.path)] || {}
+    @@front_site[front_key(@stasis.path)] || {}
   end
 
   def front_site
-    @front_site
+    @@front_site
+  end
+
+  def self._front_site # for other plugins
+    @@front_site
   end
 
   def self.matchers
@@ -65,7 +69,7 @@ class Homeostasis::Front < Stasis::Plugin
 
   private
   def front_key(filename)
-    filename.sub(Dir.pwd, '')[1..-1]
+    filename.sub(@stasis.root, '')[1..-1]
   end
 
   def trailify(filename)

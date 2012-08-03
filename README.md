@@ -1,7 +1,8 @@
 Description
 ===========
 
-Stasis plugin for asset stamping, blogs, front-matter yaml, and trailing slash.
+Stasis plugin for asset stamping, blogs, front-matter yaml, and trailing
+slashes.
 
 Installation
 ============
@@ -11,12 +12,9 @@ Installation
 In your controller:
 
     require 'rubygems'
-    require 'homeostasis/asset'   # for asset stamping
-    require 'homeostasis/blog'    # for blog support
-    require 'homeostasis/front'   # for yaml front-matter
-    require 'homeostasis/trail'   # for trailing slashes
+    require 'homeostasis'
 
-Each component is optional.
+This requires the current directory to be under `git` version control.
 
 Asset Stamping
 ==============
@@ -53,10 +51,11 @@ Blog
 
 In your controller:
 
-    Homeostasis::Blog.create('blog') # directory of posts
+    Homeostasis::Blog.directory('blog') # directory of posts
 
-Post files should be in the format `yyyy-mm-dd-permalink.html.{md,haml}` and
-have YAML front-matter:
+Post files should be in the format `yyyy-mm-dd-permalink.html.{md,haml}`.  Use
+YAML front-matter for any metadata you want.  `:date` and `:path` will be
+added automatically for you.
 
     <!--
       :title: Title Goes Here
@@ -66,16 +65,13 @@ You'll have to create your own `blog/index.html`.  Use the `blog_posts` helper
 to construct it:
 
     - blog_posts.each do |post|
+      %span.date post[:date].strftime("%m/%d/%Y")
       %a{:href => post[:path]}= post[:title]
-
-Stick this in your controller for an RSS feed:
-
-    Homeostasis::Blog.rss('rss.xml')
 
 Front-Matter YAML
 =================
 
-This adds YAML front-matter support:
+In your views:
 
     #!
       :title: Lorem Ipsum
@@ -108,8 +104,7 @@ There's also a `front_site` helper which contains the data for all pages for
 cross-page access.
 
 Note that `:path` is automatically assigned if left blank.  Its value will be
-the production path to the page.  If the trailing slash plugin is included,
-the `html` extension will be lost.
+the public path to the page.
 
 Trailing Slash
 ==============

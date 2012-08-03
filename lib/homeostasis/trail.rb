@@ -1,5 +1,4 @@
-require File.join(File.dirname(__FILE__), 'env')
-require 'fileutils'
+require File.join(File.dirname(__FILE__), '..', 'homeostasis')
 
 class Homeostasis::Trail < Stasis::Plugin
   after_all :after_all

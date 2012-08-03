@@ -1,0 +1,6 @@
+%ul
+- blog_posts.each do |post|
+  %li
+    = post[:date].strftime('%m/%d/%Y')
+    %a{:href => post[:path]}= post[:title]
+
