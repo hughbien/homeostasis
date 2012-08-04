@@ -17,7 +17,7 @@ class Homeostasis::Blog < Stasis::Plugin
   end
 
   def before_all
-    raise 'Homeostasis::Blog#directory never set' if @@directory.nil?
+    return if @@directory.nil?
     blog_dir = File.join(@stasis.root, @@directory)
     front_site = Homeostasis::Front._front_site
     Dir.glob("#{blog_dir}/*").each do |filename|

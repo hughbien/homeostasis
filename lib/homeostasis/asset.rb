@@ -8,6 +8,7 @@ class Homeostasis::Asset < Stasis::Plugin
   def initialize(stasis)
     @stasis = stasis
     @@matcher = /\.(jpg|png|gif|css|js)/i
+    @@replace_matcher = /\.(html|css|js)/i
     @@mapping = {}
     @@concats = {}
     @@concats_pre = {}
@@ -63,9 +64,8 @@ class Homeostasis::Asset < Stasis::Plugin
       relative_versioned = versioned[(@stasis.destination.length+1)..-1]
       asset_paths[relative_dest] = relative_versioned
     end
-    (@@mapping.values + asset_paths.values).each do |dest|
-      filename = File.join(@stasis.destination, dest)
-      next if !File.exist?(filename)
+    Dir.glob("#{@stasis.destination[@stasis.root.length+1..-1]}/**/*").each do |filename|
+      next if File.directory?(filename) || filename !~ @@replace_matcher
       contents = File.read(filename)
       begin
         asset_paths.each do |old, new|
@@ -102,16 +102,12 @@ class Homeostasis::Asset < Stasis::Plugin
     @@matcher = regex
   end
 
-  def self.mapping
-    @@mapping
+  def self.replace_matcher=(regex)
+    @@replace_matcher = regex
   end
 
   def self.concat(dest, files)
     @@concats_pre[dest] = files
-  end
-
-  def self.concats
-    @@concats
   end
 
   private

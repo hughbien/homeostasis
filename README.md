@@ -1,8 +1,8 @@
 Description
 ===========
 
-Stasis plugin for asset stamping, blogs, front-matter yaml, and trailing
-slashes.
+Stasis plugin for asset stamping, blogs, front-matter yaml, sitemaps, and
+trailing slashes.
 
 Installation
 ============
@@ -35,13 +35,16 @@ You'll end up with something like this:
     styles.sha1.css
 
 Generated files in the `public` directory will go through a global search and
-replace.
+replace.  By default, it'll only do this on `html`, `css`, and `js` files.
+You can configure this:
+
+    Homeostasis::Asset.replace_matcher = /.(html|css|js)$/i
 
 You can set the regex for asset matching in your controller:
 
     Homeostasis::Asset.matcher = /myregex$/i
 
-You can even concat your assets into a single file:
+You can also configure concatenation of multiple assets into a single file:
 
     Homeostasis::Asset.concat 'all.js', %w(jquery.js mine.js)
     Homeostasis::Asset.concat 'all.css', %w(reset.css mine.css)
@@ -106,6 +109,14 @@ cross-page access.
 Note that `:path` is automatically assigned if left blank.  Its value will be
 the public path to the page.
 
+Sitemap
+=======
+
+A sitemap will automatically be generated in `public/sitemap.xml`.  You'll need
+to set the root URL for this to happen:
+
+    Homeostasis.root 'http://example.com'
+
 Trailing Slash
 ==============
 
@@ -124,6 +135,14 @@ You'll get:
 
 This works well with an `htaccess` file that automatically appends trailing
 slashes to URLs.
+
+TODO
+====
+
+* use Dir.glob with relative paths
+* add tests/coverage
+* RSS generation
+* sitemap generation
 
 License
 =======
