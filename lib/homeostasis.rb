@@ -149,8 +149,7 @@ module Homeostasis
     def before_all
       @stasis.paths.each do |path|
         next if path !~ /\.(#{@@matchers.keys.join('|')})$/
-        contents = File.read(path)
-        next if contents !~ @@matchers[File.extname(path)[1..-1]]
+        next if (contents = File.read(path)) !~ @@matchers[File.extname(path)[1..-1]]
 
         lines, data, index = contents.split("\n"), "", 1
         while index < lines.size
@@ -161,10 +160,9 @@ module Homeostasis
 
         relative = path[(@stasis.root.length+1)..-1]
         ext = Tilt.mappings.keys.find { |ext| File.extname(path)[1..-1] == ext }
-        dest = (ext && File.extname(relative) == ".#{ext}") ?
+        dest = trailify((ext && File.extname(relative) == ".#{ext}") ?
           relative[0..-1*ext.length-2] :
-          relative
-        dest = trailify(dest)
+          relative)
         
         begin
           yaml = YAML.load(data)
@@ -188,10 +186,6 @@ module Homeostasis
       @@front_site
     end
 
-    def self.matchers
-      @@matchers
-    end
-
     def self.matchers=(ext)
       @@matchers = ext
     end
@@ -202,7 +196,7 @@ module Homeostasis
     end
 
     def trailify(filename)
-      @trail_included ||= @stasis.plugins.any? {|plugin| plugin.is_a?(Homeostasis::Trail)}
+      @trail_included ||= @stasis.plugins.any? { |plugin| plugin.is_a?(Homeostasis::Trail) }
       if filename == 'index.html'
         '/'
       elsif File.basename(filename) == 'index.html'
@@ -223,20 +217,18 @@ module Homeostasis
     end
 
     def after_all
-      Dir.glob("#{@stasis.destination}/**/*.html").each do |filename|
-        next if File.basename(filename) == 'index.html'
-        dir = "#{filename[0..-6]}/"
-        if File.exists?("#{dir}index.html")
-          puts "Unable to trail #{filename[(@stasis.destination.length+1)..-1]}"
-        else
-          FileUtils.mkdir_p(dir)
-          File.rename(filename, "#{dir}index.html")
-        end
+      dest = @stasis.destination[(@stasis.root.length + 1)..-1]
+      Dir.glob("#{dest}/**/*.html").each do |filename|
+        next if filename =~ /\/index\.html$/
+        dir = "#{filename.sub(/\.html$/, '')}/"
+        FileUtils.mkdir_p(dir)
+        File.rename(filename, "#{dir}index.html")
       end
     end
   end
 
   class Blog < Stasis::Plugin
+    DATE_REGEX = /^(\d{4}-\d{2}-\d{2})-/
     before_all    :before_all
     after_all     :after_all
     action_method :blog_posts
@@ -253,26 +245,25 @@ module Homeostasis
 
     def before_all
       return if @@directory.nil?
-      blog_dir = File.join(@stasis.root, @@directory)
       front_site = Homeostasis::Front._front_site
-      Dir.glob("#{blog_dir}/*").each do |filename|
-        next if File.basename(filename) !~ /^(\d{4}-\d{2}-\d{2})-/
+      Dir.glob("#{File.join(@stasis.root, @@directory)}/*").each do |filename|
+        next if File.basename(filename) !~ DATE_REGEX
         date = $1
         post = front_site[filename.sub(@stasis.root, '')[1..-1]] || {}
         post[:date] = Date.parse(date)
-        post[:path] = post[:path].sub("/#{@@directory}/#{$1}-", "/#{@@directory}/")
+        post[:path] = post[:path].sub("/#{@@directory}/#{date}-", "/#{@@directory}/")
         @@posts << post
       end
-      @@posts = @@posts.sort_by {|post| post[:date]}.reverse
+      @@posts = @@posts.sort_by { |post| post[:date] }.reverse
     end
 
     def after_all
       return if @@directory.nil?
-      blog_dir = File.join(@stasis.destination, @@directory)
-      Dir.glob("#{blog_dir}/*").each do |filename|
-        next if filename !~ /^\d{4}-\d{2}-\d{2}-/
-        newbase = File.basename(filename).sub(/^(\d{4}-\d{2}-\d{2})-/, '')
-        FileUtils.mv(filename, File.join(File.dirname(filename), newbase))
+      Dir.glob("#{File.join(@stasis.destination, @@directory)}/*").each do |filename|
+        next if (base = File.basename(filename)) !~ DATE_REGEX
+        FileUtils.mv(
+          filename,
+          File.join(File.dirname(filename), base.sub(DATE_REGEX, '')))
       end
     end
 
