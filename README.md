@@ -117,6 +117,14 @@ to set the root URL for this to happen:
 
     Homeostasis::Sitemap.url 'http://example.com'
 
+`loc` and `lastmod` will be generated for each page.  Use front-yaml to set the
+`changefreq` or `priority`:
+
+    <!--
+      :changefreq: monthly
+      :priority: 0.9
+    -->
+
 Trailing Slash
 ==============
 

@@ -243,8 +243,8 @@ module Homeostasis
     
     def after_all
       return if @@url.nil?
-      xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+      xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      xml += "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
       front_site = Homeostasis::Front._front_site
       pages = front_site.keys.sort_by do |page|
         depth = page.scan('/').length
@@ -252,8 +252,18 @@ module Homeostasis
         "#{depth}-#{page}"
       end
       pages.each do |page|
-        loc = front_site[page][:path]
-        xml += "  <url>\n    <loc>#{@@url}#{loc}</loc>\n  </url>\n"
+        filename = File.join(@stasis.root, page)
+        front = front_site[page]
+        log = `git log -n1 #{filename} 2> /dev/null | grep "Date:"`
+        lastmod = log.length > 0 ?
+          Date.parse(log.split("\n")[0].split(":",2)[1].strip).strftime('%Y-%m-%d') :
+          nil
+        xml += "  <url>\n"
+        xml += "    <loc>#{@@url}#{front[:path]}</loc>\n" if front[:path]
+        xml += "    <lastmod>#{lastmod}</lastmod>\n" if lastmod
+        xml += "    <changefreq>#{front[:changefreq]}</changefreq>\n" if front[:changefreq]
+        xml += "    <priority>#{front[:priority]}</priority>\n" if front[:priority]
+        xml += "  </url>\n"
       end
       xml += '</urlset>'
       File.open(File.join(@stasis.destination, 'sitemap.xml'), 'w') do |f|

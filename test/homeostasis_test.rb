@@ -102,6 +102,7 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert(xml =~ /<loc>http:\/\/local\.fixture\/page\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/hello-world\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/second-post\/<\/loc>/)
+    assert_equal(4, xml.scan("<lastmod>").length)
   end
 
   def test_blog
