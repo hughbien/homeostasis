@@ -19,6 +19,7 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     @asset = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Asset) }
     @front = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Front) }
     @trail = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Trail) }
+    @sitemap = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Sitemap) }
     @blog = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Blog) }
     @stasis.render
   end
@@ -91,6 +92,16 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     @stasis.render
     assert(File.exists?(dest("page.html")))
     refute(File.exists?(dest("page/index.html")))
+  end
+
+  def test_sitemap
+    assert(File.exists?(dest("sitemap.xml")))
+
+    xml = File.read(dest("sitemap.xml"))
+    assert(xml =~ /<loc>http:\/\/local\.fixture\/<\/loc>/)
+    assert(xml =~ /<loc>http:\/\/local\.fixture\/page\/<\/loc>/)
+    assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/hello-world\/<\/loc>/)
+    assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/second-post\/<\/loc>/)
   end
 
   def test_blog

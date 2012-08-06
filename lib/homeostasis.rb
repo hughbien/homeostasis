@@ -229,6 +229,39 @@ module Homeostasis
     end
   end
 
+  class Sitemap < Stasis::Plugin
+    after_all :after_all
+
+    def initialize(stasis)
+      @stasis = stasis
+      @@url = nil
+    end
+
+    def self.url(url)
+      @@url = url
+    end
+    
+    def after_all
+      return if @@url.nil?
+      xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+      front_site = Homeostasis::Front._front_site
+      pages = front_site.keys.sort_by do |page|
+        depth = page.scan('/').length
+        depth -= 1 if page =~ /index\.html/
+        "#{depth}-#{page}"
+      end
+      pages.each do |page|
+        loc = front_site[page][:path]
+        xml += "  <url>\n    <loc>#{@@url}#{loc}</loc>\n  </url>\n"
+      end
+      xml += '</urlset>'
+      File.open(File.join(@stasis.destination, 'sitemap.xml'), 'w') do |f|
+        f.puts(xml)
+      end
+    end
+  end
+
   class Blog < Stasis::Plugin
     DATE_REGEX = /^(\d{4}-\d{2}-\d{2})-/
     before_all    :before_all
@@ -280,5 +313,6 @@ if !ENV['HOMEOSTASIS_UNREGISTER']
   Stasis.register(Homeostasis::Asset)
   Stasis.register(Homeostasis::Front)
   Stasis.register(Homeostasis::Trail)
+  Stasis.register(Homeostasis::Sitemap)
   Stasis.register(Homeostasis::Blog)
 end

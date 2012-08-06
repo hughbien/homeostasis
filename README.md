@@ -115,7 +115,7 @@ Sitemap
 A sitemap will automatically be generated in `public/sitemap.xml`.  You'll need
 to set the root URL for this to happen:
 
-    Homeostasis.root 'http://example.com'
+    Homeostasis::Sitemap.url 'http://example.com'
 
 Trailing Slash
 ==============
@@ -135,14 +135,6 @@ You'll get:
 
 This works well with an `htaccess` file that automatically appends trailing
 slashes to URLs.
-
-TODO
-====
-
-* use Dir.glob with relative paths
-* add tests/coverage
-* RSS generation
-* sitemap generation
 
 License
 =======
