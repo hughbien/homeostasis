@@ -1,7 +1,9 @@
 require 'rubygems'
 require 'stasis'
 require 'digest/sha1'
+require 'bluecloth'
 require 'yaml'
+require 'cgi'
 
 module Homeostasis
   VERSION = '0.0.10'
@@ -20,6 +22,10 @@ module Homeostasis
         end
       end
       false
+    end
+
+    def h(html)
+      CGI::escapeHTML(html)
     end
   end
 
@@ -240,6 +246,7 @@ module Homeostasis
   end
 
   class Sitemap < Stasis::Plugin
+    include Helpers
     after_all :after_all
 
     def initialize(stasis)
@@ -264,17 +271,17 @@ module Homeostasis
       pages.each do |page|
         front = front_site[page]
         filename = File.join(@stasis.root, page)
-        next if page !~ /\.html/ || front[:sitemap] == false || front[:path].nil?
+        next if page !~ /\.html/ || front[:private] || front[:path].nil?
 
         log = `git log -n1 #{filename} 2> /dev/null | grep "Date:"`
         lastmod = log.length > 0 ?
           Date.parse(log.split("\n")[0].split(":",2)[1].strip).strftime('%Y-%m-%d') :
           nil
         xml += "  <url>\n"
-        xml += "    <loc>#{@@url}#{front[:path]}</loc>\n" if front[:path]
-        xml += "    <lastmod>#{lastmod}</lastmod>\n" if lastmod
-        xml += "    <changefreq>#{front[:changefreq]}</changefreq>\n" if front[:changefreq]
-        xml += "    <priority>#{front[:priority]}</priority>\n" if front[:priority]
+        xml += "    <loc>#{h(@@url + front[:path])}</loc>\n" if front[:path]
+        xml += "    <lastmod>#{h lastmod}</lastmod>\n" if lastmod
+        xml += "    <changefreq>#{h front[:changefreq]}</changefreq>\n" if front[:changefreq]
+        xml += "    <priority>#{h front[:priority]}</priority>\n" if front[:priority]
         xml += "  </url>\n"
       end
       xml += '</urlset>'
@@ -285,6 +292,7 @@ module Homeostasis
   end
 
   class Blog < Stasis::Plugin
+    include Helpers
     DATE_REGEX = /^(\d{4}-\d{2}-\d{2})-/
     before_all    :before_all
     after_all     :after_all
@@ -293,11 +301,17 @@ module Homeostasis
     def initialize(stasis)
       @stasis = stasis
       @@directory = nil
+      @@link = nil
+      @@title = nil
+      @@desc = nil
       @@posts = []
     end
 
-    def self.directory(directory)
+    def self.config(directory, link, title, desc)
       @@directory = directory
+      @@link = link
+      @@title = title
+      @@desc = desc
     end
 
     def before_all
@@ -309,6 +323,7 @@ module Homeostasis
         post = front_site[filename.sub(@stasis.root, '')[1..-1]] || {}
         post[:date] = Date.parse(date)
         post[:path] = post[:path].sub("/#{@@directory}/#{date}-", "/#{@@directory}/")
+        post[:body] = BlueCloth.new(File.read(filename)).to_html if filename =~ /\.md$/
         @@posts << post
       end
       @@posts = @@posts.sort_by { |post| post[:date] }.reverse
@@ -322,10 +337,31 @@ module Homeostasis
           filename,
           File.join(File.dirname(filename), base.sub(DATE_REGEX, '')))
       end
+      url = h("#{@@link}/#{@@directory}/")
+      rss = "<?xml version=\"1.0\"?>\n"
+      rss += "<rss version=\"2.0\">\n"
+      rss += "  <channel>\n"
+      rss += "    <title>#{h @@title}</title>\n" if @@title
+      rss += "    <link>#{h @@link}/</link>\n" if @@link
+      rss += "    <description>#{h @@desc}</description>\n" if @@desc
+      rss += "    <atom:link href=\"#{url}/\" rel=\"self\" type=\"application/rss+xml\" />\n"
+      blog_posts[0..5].each do |post|
+        rss += "    <item>\n"
+        rss += "      <title>#{h post[:title]}</title>\n"
+        rss += "      <link>#{h(@@link + post[:path])}</link>\n"
+        rss += "      <pubDate>#{post[:date].strftime('%m-%d-%Y %H:%M')}</pubDate>\n"
+        rss += "      <description>#{h post[:body]}</description>\n"
+        rss += "    </item>\n"
+      end
+      rss += "  </channel>\n"
+      rss += "</rss>"
+      File.open(File.join(@stasis.destination, @@directory, 'rss.xml'), 'w') do |f|
+        f.puts(rss)
+      end
     end
 
     def blog_posts
-      raise 'Homeostasis::Blog#directory never set' if @@directory.nil?
+      raise 'Homeostasis::Blog#config never called' if @@directory.nil?
       @@posts
     end
   end

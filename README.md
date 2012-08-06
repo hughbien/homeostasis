@@ -56,7 +56,7 @@ In your controller:
 
     Homeostasis::Blog.directory('blog') # directory of posts
 
-Post files should be in the format `yyyy-mm-dd-permalink.html.{md,haml}`.  Use
+Post files should be in the format `yyyy-mm-dd-permalink.html.md`.  Use
 YAML front-matter for any metadata you want.  `:date` and `:path` will be
 added automatically for you.
 
@@ -125,6 +125,12 @@ to set the root URL for this to happen:
       :priority: 0.9
     -->
 
+Use the key `private` to avoid generating an entry:
+
+    <!--
+      :private: true
+    -->
+
 Trailing Slash
 ==============
 
@@ -143,11 +149,6 @@ You'll get:
 
 This works well with an `htaccess` file that automatically appends trailing
 slashes to URLs.
-
-TODO
-====
-
-* rss feed
 
 License
 =======

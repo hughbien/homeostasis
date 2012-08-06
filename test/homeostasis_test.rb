@@ -128,6 +128,8 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert_equal(
       ['2012-01-02', '2012-01-01'],
       posts.map { |p| p[:date].strftime('%Y-%m-%d') })
+
+    assert(File.exists?(dest("/blog/rss.xml")))
   end
 
   private
