@@ -4,7 +4,7 @@ require 'digest/sha1'
 require 'yaml'
 
 module Homeostasis
-  VERSION = '0.0.9'
+  VERSION = '0.0.10'
 
   class Asset < Stasis::Plugin
     before_all :before_all

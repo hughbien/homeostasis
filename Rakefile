@@ -21,7 +21,8 @@ end
 
 desc 'clean generated files'
 task :clean do
-  rm Dir.glob('*.gem coverage')
+  rm Dir.glob('*.gem')
+  rm_rf 'coverage'
 end
 
 desc 'push gem to production'
