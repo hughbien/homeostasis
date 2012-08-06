@@ -3,21 +3,28 @@ require File.join(File.dirname(__FILE__), 'lib', 'homeostasis')
 
 task :default => :test
 
+desc 'run tests'
 task :test do
-  filenames = ENV['TEST'] ? ENV['TEST'].split(' ') : Dir.glob('test/*_test.rb')
-  filenames.each do |filename|
-    require File.expand_path(filename)
-  end
+  puts `ruby test/homeostasis_test.rb`
 end
 
+desc 'run tests with coverage report'
+task :coverage do
+  ENV['HOMEOSTASIS_COVERAGE'] = '1'
+  puts `ruby test/homeostasis_test.rb`
+end
+
+desc 'build gem'
 task :build do
   `gem build homeostasis.gemspec`
 end
 
+desc 'clean generated files'
 task :clean do
-  rm Dir.glob('*.gem')
+  rm Dir.glob('*.gem coverage')
 end
 
+desc 'push gem to production'
 task :push => :build do
   `gem push homeostasis-#{Homeostasis::VERSION}.gem`
 end

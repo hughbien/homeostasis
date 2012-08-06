@@ -1,3 +1,9 @@
+if ENV['HOMEOSTASIS_COVERAGE']
+  require 'simplecov'
+  SimpleCov.command_name 'minitest'
+  SimpleCov.start
+end
+
 require 'rubygems'
 require 'stasis'
 require 'minitest/autorun'
