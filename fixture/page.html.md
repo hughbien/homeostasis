@@ -1,5 +1,7 @@
 <!--
-  :title: Lorem Ipsum
+  :title: Page
 -->
 
-That was a test.
+# Page
+
+![Alt Text](photo.jpg)

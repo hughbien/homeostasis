@@ -1,3 +1,5 @@
+require 'rubygems'
+require 'stasis'
 require 'digest/sha1'
 require 'yaml'
 
@@ -274,7 +276,7 @@ module Homeostasis
   end
 end
 
-if !ENV['HOMEOSTASIS_BUILD']
+if !ENV['HOMEOSTASIS_UNREGISTER']
   Stasis.register(Homeostasis::Asset)
   Stasis.register(Homeostasis::Front)
   Stasis.register(Homeostasis::Trail)
