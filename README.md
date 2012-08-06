@@ -54,7 +54,11 @@ Blog
 
 In your controller:
 
-    Homeostasis::Blog.directory('blog') # directory of posts
+    Homeostasis::Blog.config(
+      'blog',                             # directory of posts
+      'http://example.com',               # site url
+      'Blog Title',                       # site title
+      'Blog Description for RSS feed')    # site description
 
 Post files should be in the format `yyyy-mm-dd-permalink.html.md`.  Use
 YAML front-matter for any metadata you want.  `:date` and `:path` will be
