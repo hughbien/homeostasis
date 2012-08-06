@@ -6,8 +6,10 @@ ENV['HOMEOSTASIS_UNREGISTER'] = '1'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis'))
 
 class HomeostasisTest < MiniTest::Unit::TestCase
+  TEST_DIR = File.expand_path(File.dirname(__FILE__))
+
   def setup
-    @stasis = Stasis.new(File.join(File.dirname(__FILE__), '..', 'fixture'))
+    @stasis = Stasis.new(File.join(TEST_DIR, '..', 'fixture'))
     @asset = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Asset) }
     @front = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Front) }
     @trail = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Trail) }
