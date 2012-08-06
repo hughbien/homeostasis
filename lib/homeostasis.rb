@@ -6,7 +6,25 @@ require 'yaml'
 module Homeostasis
   VERSION = '0.0.10'
 
+  module Helpers
+    private
+    def ignore?(path)
+      @ignore_paths ||= @stasis.plugins.
+        find { |plugin| plugin.class == Stasis::Ignore }.
+        instance_variable_get(:@ignore)
+
+      matches = _match_key?(@ignore_paths, path)
+      matches.each do |group|
+        group.each do |group_path|
+          return true if _within?(group_path)
+        end
+      end
+      false
+    end
+  end
+
   class Asset < Stasis::Plugin
+    include Helpers
     before_all :before_all
     after_all  :after_all
 
@@ -117,22 +135,10 @@ module Homeostasis
     end
 
     private
-    def ignore?(path)
-      @ignore_paths ||= @stasis.plugins.
-        find { |plugin| plugin.class == Stasis::Ignore }.
-        instance_variable_get(:@ignore)
-
-      matches = _match_key?(@ignore_paths, path)
-      matches.each do |group|
-        group.each do |group_path|
-          return true if _within?(group_path)
-        end
-      end
-      false
-    end
   end
 
   class Front < Stasis::Plugin
+    include Helpers
     before_all    :before_all
     action_method :front
     action_method :front_site
@@ -151,28 +157,32 @@ module Homeostasis
     def before_all
       @stasis.paths.each do |path|
         next if path !~ /\.(#{@@matchers.keys.join('|')})$/
-        next if (contents = File.read(path)) !~ @@matchers[File.extname(path)[1..-1]]
-
-        lines, data, index = contents.split("\n"), "", 1
-        while index < lines.size
-          break if lines[index] !~ /^  /
-          data += lines[index] + "\n"
-          index += 1
+        if (contents = File.read(path)) !~ @@matchers[File.extname(path)[1..-1]]
+          yaml = {}
+        else
+          lines, data, index = contents.split("\n"), "", 1
+          while index < lines.size
+            break if lines[index] !~ /^  /
+            data += lines[index] + "\n"
+            index += 1
+          end
+          begin
+            yaml = YAML.load(data)
+          rescue Psych::SyntaxError
+            yaml = {}
+          end
         end
 
-        relative = path[(@stasis.root.length+1)..-1]
-        ext = Tilt.mappings.keys.find { |ext| File.extname(path)[1..-1] == ext }
-        dest = trailify((ext && File.extname(relative) == ".#{ext}") ?
-          relative[0..-1*ext.length-2] :
-          relative)
-        
-        begin
-          yaml = YAML.load(data)
+        # add special :path key for generated files
+        if !ignore?(path)
+          relative = path[(@stasis.root.length+1)..-1]
+          ext = Tilt.mappings.keys.find { |ext| File.extname(path)[1..-1] == ext }
+          dest = trailify((ext && File.extname(relative) == ".#{ext}") ?
+            relative[0..-1*ext.length-2] :
+            relative)
           yaml[:path] = dest
-          @@front_site[front_key(path)] = yaml if yaml.is_a?(Hash)
-        rescue Psych::SyntaxError => error
-          @@front_site[front_key(path)] = {:path => dest}
         end
+        @@front_site[front_key(path)] = yaml
       end
     end
 
@@ -252,8 +262,10 @@ module Homeostasis
         "#{depth}-#{page}"
       end
       pages.each do |page|
-        filename = File.join(@stasis.root, page)
         front = front_site[page]
+        filename = File.join(@stasis.root, page)
+        next if page !~ /\.html/ || front[:sitemap] == false || front[:path].nil?
+
         log = `git log -n1 #{filename} 2> /dev/null | grep "Date:"`
         lastmod = log.length > 0 ?
           Date.parse(log.split("\n")[0].split(":",2)[1].strip).strftime('%Y-%m-%d') :

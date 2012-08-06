@@ -59,7 +59,9 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert_equal(
      ['blog/2012-01-01-hello-world.html.md',
       'blog/2012-01-02-second-post.html.md',
+      'blog/index.html.haml',
       'index.html.haml',
+      'layout.html.haml',
       'page.html.md'],
      @front.front_site.keys.sort)
 
@@ -100,9 +102,10 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     xml = File.read(dest("sitemap.xml"))
     assert(xml =~ /<loc>http:\/\/local\.fixture\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/page\/<\/loc>/)
+    assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/hello-world\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/second-post\/<\/loc>/)
-    assert_equal(4, xml.scan("<lastmod>").length)
+    assert_equal(5, xml.scan("<lastmod>").length)
   end
 
   def test_blog

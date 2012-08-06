@@ -144,6 +144,11 @@ You'll get:
 This works well with an `htaccess` file that automatically appends trailing
 slashes to URLs.
 
+TODO
+====
+
+* rss feed
+
 License
 =======
 
