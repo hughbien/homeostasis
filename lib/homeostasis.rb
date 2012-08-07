@@ -6,7 +6,7 @@ require 'yaml'
 require 'cgi'
 
 module Homeostasis
-  VERSION = '0.0.11'
+  VERSION = '0.0.12'
 
   module Helpers
     private
