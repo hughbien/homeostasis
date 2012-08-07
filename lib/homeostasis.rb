@@ -344,7 +344,6 @@ module Homeostasis
       rss += "    <title>#{h @@title}</title>\n" if @@title
       rss += "    <link>#{h @@link}/</link>\n" if @@link
       rss += "    <description>#{h @@desc}</description>\n" if @@desc
-      rss += "    <atom:link href=\"#{url}/\" rel=\"self\" type=\"application/rss+xml\" />\n"
       blog_posts[0..5].each do |post|
         rss += "    <item>\n"
         rss += "      <title>#{h post[:title]}</title>\n"
