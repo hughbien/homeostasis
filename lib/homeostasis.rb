@@ -254,8 +254,9 @@ module Homeostasis
       @@url = nil
     end
 
-    def self.url(url)
-      @@url = url
+    def self.config(options)
+      @@url = options[:url]
+      @@lastmod = options[:lastmod] || false
     end
     
     def after_all
@@ -279,7 +280,7 @@ module Homeostasis
           nil
         xml += "  <url>\n"
         xml += "    <loc>#{h(@@url + front[:path])}</loc>\n" if front[:path]
-        xml += "    <lastmod>#{h lastmod}</lastmod>\n" if lastmod
+        xml += "    <lastmod>#{h lastmod}</lastmod>\n" if @@lastmod && lastmod
         xml += "    <changefreq>#{h front[:changefreq]}</changefreq>\n" if front[:changefreq]
         xml += "    <priority>#{h front[:priority]}</priority>\n" if front[:priority]
         xml += "  </url>\n"
@@ -316,6 +317,7 @@ module Homeostasis
 
     def before_all
       return if @@directory.nil?
+      @@posts = []
       front_site = Homeostasis::Front._front_site
       Dir.glob("#{File.join(@stasis.root, @@directory)}/*").each do |filename|
         next if File.basename(filename) !~ DATE_REGEX

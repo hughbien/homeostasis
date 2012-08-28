@@ -7,6 +7,8 @@ Homeostasis::Blog.config(
   'http://local.fixture/blog',
   'Local Fixture',
   'A place to test Homeostasis')
-Homeostasis::Sitemap.url 'http://local.fixture'
+Homeostasis::Sitemap.config(
+  :url => 'http://local.fixture',
+  :lastmod => false)
 
 layout /.*.html(\.haml|\.md)?/ => 'layout.html.haml'

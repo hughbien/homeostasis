@@ -119,7 +119,10 @@ Sitemap
 A sitemap will automatically be generated in `public/sitemap.xml`.  You'll need
 to set the root URL for this to happen:
 
-    Homeostasis::Sitemap.url 'http://example.com'
+    Homeostasis::Sitemap.config(
+      :url => 'http://example.com',  # required
+      :lastmod => false              # default is true
+    )
 
 `loc` and `lastmod` will be generated for each page.  Use front-yaml to set the
 `changefreq` or `priority`:
