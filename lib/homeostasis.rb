@@ -128,12 +128,9 @@ module Homeostasis
         Digest::SHA1.hexdigest(versions.join('.'))
     end
 
-    def self.matcher=(regex)
-      @@matcher = regex
-    end
-
-    def self.replace_matcher=(regex)
-      @@replace_matcher = regex
+    def self.config(options)
+      @@matcher = options[:matcher] if options[:matcher]
+      @@replace_matcher = options[:replace_matcher] if options[:replace_matcher]
     end
 
     def self.concat(dest, files)
@@ -204,8 +201,8 @@ module Homeostasis
       @@front_site
     end
 
-    def self.matchers=(ext)
-      @@matchers = ext
+    def self.config(options)
+      @@matchers = options[:matchers] if options[:matchers]
     end
 
     private
@@ -302,17 +299,17 @@ module Homeostasis
     def initialize(stasis)
       @stasis = stasis
       @@directory = nil
-      @@link = nil
+      @@url = nil
       @@title = nil
       @@desc = nil
       @@posts = []
     end
 
-    def self.config(directory, link, title, desc)
-      @@directory = directory
-      @@link = link
-      @@title = title
-      @@desc = desc
+    def self.config(options)
+      @@directory = options[:directory]
+      @@url = options[:url]
+      @@title = options[:title]
+      @@desc = options[:desc]
     end
 
     def before_all
@@ -339,17 +336,17 @@ module Homeostasis
           filename,
           File.join(File.dirname(filename), base.sub(DATE_REGEX, '')))
       end
-      url = h("#{@@link}/#{@@directory}/")
+      url = h("#{@@url}/#{@@directory}/")
       rss = "<?xml version=\"1.0\"?>\n"
       rss += "<rss version=\"2.0\">\n"
       rss += "  <channel>\n"
       rss += "    <title>#{h @@title}</title>\n" if @@title
-      rss += "    <link>#{h @@link}/</link>\n" if @@link
+      rss += "    <link>#{h @@url}/</link>\n" if @@url
       rss += "    <description>#{h @@desc}</description>\n" if @@desc
       blog_posts[0..5].each do |post|
         rss += "    <item>\n"
         rss += "      <title>#{h post[:title]}</title>\n"
-        rss += "      <link>#{h(@@link + post[:path])}</link>\n"
+        rss += "      <link>#{h(@@url + post[:path])}</link>\n"
         rss += "      <pubDate>#{post[:date].strftime('%m-%d-%Y %H:%M')}</pubDate>\n"
         rss += "      <description>#{h post[:body]}</description>\n"
         rss += "    </item>\n"

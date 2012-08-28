@@ -36,15 +36,14 @@ You'll end up with something like this:
 
 Generated files in the `public` directory will go through a global search and
 replace.  By default, it'll only do this on `html`, `css`, and `js` files.
-You can configure this:
+You can configure this with the `replace_matcher` option.  You can also
+configure the regex for asset matching with `matcher`:
 
-    Homeostasis::Asset.replace_matcher = /.(html|css|js)$/i
+    Homeostasis::Asset.config(
+      :replace_matcher => /.(html|css|js)$/i,
+      :matcher => /myregex$/i)
 
-You can set the regex for asset matching in your controller:
-
-    Homeostasis::Asset.matcher = /myregex$/i
-
-You can also configure concatenation of multiple assets into a single file:
+You can concatenate multiple assets into a single file:
 
     Homeostasis::Asset.concat 'all.js', %w(jquery.js mine.js)
     Homeostasis::Asset.concat 'all.css', %w(reset.css mine.css)
@@ -55,10 +54,10 @@ Blog
 In your controller:
 
     Homeostasis::Blog.config(
-      'blog',                             # directory of posts
-      'http://example.com',               # site url
-      'Blog Title',                       # site title
-      'Blog Description for RSS feed')    # site description
+      :directory => 'blog',                      # directory of posts, required
+      :url => 'http://example.com',              # site url, required
+      :title => 'Blog Title',
+      :desc => 'Blog Description for RSS feed')
 
 Post files should be in the format `yyyy-mm-dd-permalink.html.md`.  Use
 YAML front-matter for any metadata you want.  `:date` and `:path` will be
@@ -98,12 +97,13 @@ ERB comments as well:
 
 You can configure which files to check in `controller.rb`.  Here's the default:
 
-    Homeostasis::Front.matchers = {
-      'erb'  => /<%#/,
-      'haml' => /-#/,
-      'html' => /<!--/,
-      'md'   => /<!--/
-    }
+    Homeostasis::Front.config(
+      :matchers => {
+        'erb'  => /<%#/,
+        'haml' => /-#/,
+        'html' => /<!--/,
+        'md'   => /<!--/
+      })
 
 Just start the file with YAML inside a comment with 2-space indentation.  The
 data will be available from the `front` method in your views and controller.
