@@ -1,9 +1,6 @@
-ENV['HOMEOSTASIS_UNREGISTER'] = '1'
-require File.join(File.dirname(__FILE__), 'lib', 'homeostasis')
- 
 Gem::Specification.new do |s|
   s.name        = 'homeostasis'
-  s.version     = Homeostasis::VERSION
+  s.version     = '0.0.12'
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Hugh Bien']
   s.email       = ['hugh@hughbien.com']

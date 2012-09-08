@@ -7,7 +7,7 @@ trailing slashes.
 Installation
 ============
 
-    % gem install homeostasis
+    $ gem install homeostasis
 
 In your controller:
 
@@ -157,8 +157,13 @@ You'll get:
 This works well with an `htaccess` file that automatically appends trailing
 slashes to URLs.
 
+TODO
+====
+
+* make each plugin optional
+
 License
 =======
 
-Copyright 2012 Hugh Bien - http://hughbien.com.
+Copyright Hugh Bien - http://hughbien.com.
 Released under BSD License, see LICENSE.md for more info.
