@@ -6,7 +6,7 @@ require 'yaml'
 require 'cgi'
 
 module Homeostasis
-  VERSION = '0.0.12'
+  VERSION = '0.0.13'
 
   module Helpers
     private
@@ -68,7 +68,6 @@ module Homeostasis
     def after_all
       assets = {}
       strip_dest = (@stasis.destination.length + 1)..-1
-      strip_root = (@stasis.root.length + 1)..-1
 
       # concatenate files with stamps
       @@orig_concats.each do |concatted, files|
@@ -99,7 +98,7 @@ module Homeostasis
       end
 
       # read contents of each file, search/replace assets with stamps
-      Dir.glob("#{@stasis.destination[strip_root]}/**/*").each do |file|
+      Dir.glob("#{@stasis.destination}/**/*").each do |file|
         next if file !~ @@replace_matcher || File.directory?(file)
         contents = File.read(file)
         assets.each do |old, new|
@@ -232,7 +231,7 @@ module Homeostasis
     end
 
     def after_all
-      dest = @stasis.destination[(@stasis.root.length + 1)..-1]
+      dest = @stasis.destination
       Dir.glob("#{dest}/**/*.html").each do |filename|
         next if filename =~ /\/index\.html$/
         dir = "#{filename.sub(/\.html$/, '')}/"
