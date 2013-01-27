@@ -4,6 +4,7 @@ require '../lib/homeostasis'
 Homeostasis::Asset.concat 'all.css', %w(styles.css)
 Homeostasis::Blog.config(
   :directory => 'blog',
+  :path => '',
   :url => 'http://local.fixture/blog',
   :title => 'Local Fixture',
   :desc => 'A place to test Homeostasis')

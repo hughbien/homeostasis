@@ -74,12 +74,12 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert_equal('Index', index[:title])
 
     hello_world = @front.front_site['blog/2012-01-01-hello-world.html.md']
-    assert_equal('/blog/hello-world/', hello_world[:path])
+    assert_equal('/hello-world/', hello_world[:path])
     assert_equal('Hello World', hello_world[:title])
     assert_equal('2012-01-01', hello_world[:date].strftime('%Y-%m-%d'))
 
     second_post = @front.front_site['blog/2012-01-02-second-post.html.md']
-    assert_equal('/blog/second-post/', second_post[:path])
+    assert_equal('/second-post/', second_post[:path])
     assert_equal('Second Post', second_post[:title])
     assert_equal('2012-01-02', second_post[:date].strftime('%Y-%m-%d'))
 
@@ -103,8 +103,8 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert(xml =~ /<loc>http:\/\/local\.fixture\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/page\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/<\/loc>/)
-    assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/hello-world\/<\/loc>/)
-    assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/second-post\/<\/loc>/)
+    assert(xml =~ /<loc>http:\/\/local\.fixture\/hello-world\/<\/loc>/)
+    assert(xml =~ /<loc>http:\/\/local\.fixture\/second-post\/<\/loc>/)
     assert_equal(0, xml.scan("<lastmod>").length)
   end
 
@@ -113,8 +113,8 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert_equal('2012-01-01', $1)
 
     assert(File.exists?(dest("/blog/index.html")))
-    assert(File.exists?(dest("/blog/hello-world/index.html")))
-    assert(File.exists?(dest("/blog/second-post/index.html")))
+    assert(File.exists?(dest("/hello-world/index.html")))
+    assert(File.exists?(dest("/second-post/index.html")))
     refute(File.exists?(dest("/blog/2012-01-01-hello-world.html")))
     refute(File.exists?(dest("/blog/2012-01-02-second-post.html")))
 
@@ -123,7 +123,7 @@ class HomeostasisTest < MiniTest::Unit::TestCase
       ['Second Post', 'Hello World'],
       posts.map { |p| p[:title] })
     assert_equal(
-      ['/blog/second-post/', '/blog/hello-world/'],
+      ['/second-post/', '/hello-world/'],
       posts.map { |p| p[:path] })
     assert_equal(
       ['2012-01-02', '2012-01-01'],

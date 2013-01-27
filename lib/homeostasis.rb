@@ -298,6 +298,7 @@ module Homeostasis
     def initialize(stasis)
       @stasis = stasis
       @@directory = nil
+      @@path = nil
       @@url = nil
       @@title = nil
       @@desc = nil
@@ -306,6 +307,7 @@ module Homeostasis
 
     def self.config(options)
       @@directory = options[:directory]
+      @@path = options[:path] || options[:directory]
       @@url = options[:url]
       @@title = options[:title]
       @@desc = options[:desc]
@@ -320,7 +322,9 @@ module Homeostasis
         date = $1
         post = front_site[filename.sub(@stasis.root, '')[1..-1]] || {}
         post[:date] = Date.parse(date)
-        post[:path] = post[:path].sub("/#{@@directory}/#{date}-", "/#{@@directory}/")
+        post[:path] = post[:path].sub(
+          "/#{@@directory}/#{date}-",
+          File.join('/', @@path, '/'))
         post[:body] = BlueCloth.new(File.read(filename)).to_html if filename =~ /\.md$/
         @@posts << post
       end
@@ -329,11 +333,11 @@ module Homeostasis
 
     def after_all
       return if @@directory.nil?
+      blog_dest = File.join(@stasis.destination, @@path)
+      FileUtils.mkdir_p(blog_dest) if !Dir.exist?(blog_dest)
       Dir.glob("#{File.join(@stasis.destination, @@directory)}/*").each do |filename|
         next if (base = File.basename(filename)) !~ DATE_REGEX
-        FileUtils.mv(
-          filename,
-          File.join(File.dirname(filename), base.sub(DATE_REGEX, '')))
+        FileUtils.mv(filename, File.join(blog_dest, base.sub(DATE_REGEX, '')))
       end
       url = h("#{@@url}/#{@@directory}/")
       rss = "<?xml version=\"1.0\"?>\n"

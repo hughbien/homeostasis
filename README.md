@@ -54,8 +54,9 @@ Blog
 In your controller:
 
     Homeostasis::Blog.config(
-      :directory => 'blog',                      # directory of posts, required
-      :url => 'http://example.com',              # site url, required
+      :directory => 'blog', # directory of posts, required
+      :path => '', # post path prefix, defaults to directory - '' for none
+      :url => 'http://example.com', # site url, required
       :title => 'Blog Title',
       :desc => 'Blog Description for RSS feed')
 
