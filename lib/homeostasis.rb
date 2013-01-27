@@ -339,7 +339,8 @@ module Homeostasis
         next if (base = File.basename(filename)) !~ DATE_REGEX
         FileUtils.mv(filename, File.join(blog_dest, base.sub(DATE_REGEX, '')))
       end
-      url = h("#{@@url}/#{@@directory}/")
+      url = h(File.join(@@url, @@path))
+      zone = Time.new.zone
       rss = "<?xml version=\"1.0\"?>\n"
       rss += "<rss version=\"2.0\">\n"
       rss += "  <channel>\n"
@@ -349,8 +350,8 @@ module Homeostasis
       blog_posts[0..5].each do |post|
         rss += "    <item>\n"
         rss += "      <title>#{h post[:title]}</title>\n"
-        rss += "      <link>#{h(@@url + post[:path])}</link>\n"
-        rss += "      <pubDate>#{post[:date].strftime('%a, %d %b %Y 0:00:01 GMT')}</pubDate>\n"
+        rss += "      <link>#{h(File.join(@@url, post[:path]))}</link>\n"
+        rss += "      <pubDate>#{post[:date].strftime("%a, %d %b %Y 0:00:01 #{zone}")}</pubDate>\n"
         rss += "      <description>#{h post[:body]}</description>\n"
         rss += "    </item>\n"
       end

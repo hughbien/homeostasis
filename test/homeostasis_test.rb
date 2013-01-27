@@ -131,8 +131,8 @@ class HomeostasisTest < MiniTest::Unit::TestCase
 
     assert(File.exists?(dest("/blog/rss.xml")))
     rss = File.read(dest("/blog/rss.xml"))
-    assert_match("Sun, 01 Jan 2012", rss)
-    assert_match("Mon, 02 Jan 2012", rss)
+    assert_match("Sun, 01 Jan 2012 0:00:01 #{Time.new.zone}", rss)
+    assert_match("Mon, 02 Jan 2012 0:00:01 #{Time.new.zone}", rss)
   end
 
   private
