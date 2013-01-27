@@ -7,8 +7,6 @@ require 'cgi'
 require 'uri'
 
 module Homeostasis
-  VERSION = '0.0.14'
-
   module Helpers
     private
     def ignore?(path)

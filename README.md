@@ -162,7 +162,6 @@ TODO
 ====
 
 * make each plugin optional
-* single version endpoint
 
 License
 =======

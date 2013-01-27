@@ -1,5 +1,6 @@
 ENV['HOMEOSTASIS_UNREGISTER'] = '1'
 require File.join(File.dirname(__FILE__), 'lib', 'homeostasis')
+require File.join(File.dirname(__FILE__), 'lib', 'version')
 
 task :default => :test
 
