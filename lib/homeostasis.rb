@@ -357,7 +357,7 @@ module Homeostasis
       end
       rss += "  </channel>\n"
       rss += "</rss>"
-      File.open(File.join(@stasis.destination, @@directory, 'rss.xml'), 'w') do |f|
+      File.open(File.join(blog_dest, @@path, 'rss.xml'), 'w') do |f|
         f.puts(rss)
       end
     end
