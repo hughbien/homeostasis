@@ -4,6 +4,7 @@ require 'digest/sha1'
 require 'bluecloth'
 require 'yaml'
 require 'cgi'
+require 'uri'
 
 module Homeostasis
   VERSION = '0.0.14'
@@ -348,6 +349,8 @@ module Homeostasis
       rss += "    <link>#{h @@url}/</link>\n" if @@url
       rss += "    <description>#{h @@desc}</description>\n" if @@desc
       blog_posts[0..5].each do |post|
+        body = post[:body]
+        body.gsub!(/(href|src)=('|")\//, "\\1=\\2#{@@url}/")
         rss += "    <item>\n"
         rss += "      <title>#{h post[:title]}</title>\n"
         rss += "      <link>#{h(File.join(@@url, post[:path]))}</link>\n"

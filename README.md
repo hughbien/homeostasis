@@ -161,7 +161,6 @@ slashes to URLs.
 TODO
 ====
 
-* fix links, images, etc... in RSS
 * make each plugin optional
 * single version endpoint
 

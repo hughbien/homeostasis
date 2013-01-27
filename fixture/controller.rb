@@ -5,7 +5,7 @@ Homeostasis::Asset.concat 'all.css', %w(styles.css)
 Homeostasis::Blog.config(
   :directory => 'blog',
   :path => '',
-  :url => 'http://local.fixture/blog',
+  :url => 'http://local.fixture',
   :title => 'Local Fixture',
   :desc => 'A place to test Homeostasis')
 Homeostasis::Sitemap.config(

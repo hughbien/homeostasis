@@ -7,6 +7,7 @@ end
 require 'rubygems'
 require 'stasis'
 require 'minitest/autorun'
+require 'cgi'
 
 ENV['HOMEOSTASIS_UNREGISTER'] = '1'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis'))
@@ -133,6 +134,8 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     rss = File.read(dest("/rss.xml"))
     assert_match("Sun, 01 Jan 2012 0:00:01 #{Time.new.zone}", rss)
     assert_match("Mon, 02 Jan 2012 0:00:01 #{Time.new.zone}", rss)
+    assert_match(CGI.escapeHTML('href="http://local.fixture/link/"'), rss)
+    assert_match(CGI.escapeHTML('src="http://local.fixture/photo.jpg"'), rss)
   end
 
   private
