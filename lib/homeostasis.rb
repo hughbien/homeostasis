@@ -99,13 +99,20 @@ module Homeostasis
       end
 
       # read contents of each file, search/replace assets with stamps
+      front_site = Homeostasis::Front._front_site
+      inverted = @@mapping.invert
       Dir.glob("#{@stasis.destination}/**/*").each do |file|
         next if file !~ @@replace_matcher || File.directory?(file)
         contents = File.read(file)
+        front = front_site[inverted[file.sub("#{@stasis.destination}/", "")]]
         assets.each do |old, new|
           old = Regexp.escape(old)
           contents.gsub!(/([^a-zA-Z0-9\.\-_])#{old}/, "\\1#{new}")
           contents.gsub!(/^#{old}/, new)
+          if front && front[:body] # for RSS feed
+            front[:body].gsub!(/([^a-zA-Z0-9\.\-_])#{old}/, "\\1#{new}")
+            front[:body].gsub!(/^#{old}/, new)
+          end
         end
         File.open(file, 'w') { |f| f.print(contents) }
       end
