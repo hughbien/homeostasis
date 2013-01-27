@@ -268,7 +268,7 @@ module Homeostasis
       pages.each do |page|
         front = front_site[page]
         filename = File.join(@stasis.root, page)
-        next if page !~ /\.html/ || front[:private] || front[:path].nil?
+        next if page !~ /\.html/ || !front || front[:private] || front[:path].nil?
 
         log = `git log -n1 #{filename} 2> /dev/null | grep "Date:"`
         lastmod = log.length > 0 ?
@@ -346,7 +346,7 @@ module Homeostasis
         rss += "    <item>\n"
         rss += "      <title>#{h post[:title]}</title>\n"
         rss += "      <link>#{h(@@url + post[:path])}</link>\n"
-        rss += "      <pubDate>#{post[:date].strftime('%m-%d-%Y %H:%M')}</pubDate>\n"
+        rss += "      <pubDate>#{post[:date].strftime('%a, %d %b %Y 0:00:01 GMT')}</pubDate>\n"
         rss += "      <description>#{h post[:body]}</description>\n"
         rss += "    </item>\n"
       end

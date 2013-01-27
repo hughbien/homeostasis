@@ -130,6 +130,9 @@ class HomeostasisTest < MiniTest::Unit::TestCase
       posts.map { |p| p[:date].strftime('%Y-%m-%d') })
 
     assert(File.exists?(dest("/blog/rss.xml")))
+    rss = File.read(dest("/blog/rss.xml"))
+    assert_match("Sun, 01 Jan 2012", rss)
+    assert_match("Mon, 02 Jan 2012", rss)
   end
 
   private
