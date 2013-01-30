@@ -162,6 +162,7 @@ TODO
 ====
 
 * make each plugin optional
+* use new triggers `after_render` and `after_write` instead of `@@mapping` hack
 
 License
 =======
