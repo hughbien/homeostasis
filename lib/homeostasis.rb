@@ -353,7 +353,7 @@ module Homeostasis
       rss += "    <title>#{h @@title}</title>\n" if @@title
       rss += "    <link>#{h @@url}/</link>\n" if @@url
       rss += "    <description>#{h @@desc}</description>\n" if @@desc
-      blog_posts[0..5].each do |post|
+      blog_posts.reject {|p| p.has_key?(:norss) }[0..5].each do |post|
         body = post[:body]
         body.gsub!(/(href|src)=('|")\//, "\\1=\\2#{@@url}/")
         rss += "    <item>\n"
