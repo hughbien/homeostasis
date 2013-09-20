@@ -1,8 +1,8 @@
 Description
 ===========
 
-Stasis plugin for asset stamping, blogs, front-matter yaml, sitemaps, and
-trailing slashes.
+Stasis plugin for asset stamping, before/after_all, blogs, front-matter yaml,
+sitemaps, and trailing slashes.
 
 Installation
 ============
@@ -47,6 +47,19 @@ You can concatenate multiple assets into a single file:
 
     Homeostasis::Asset.concat 'all.js', %w(jquery.js mine.js)
     Homeostasis::Asset.concat 'all.css', %w(reset.css mine.css)
+
+Before and After All Events
+===========================
+
+In your controller:
+
+    before_all do
+      # called exactly once before all files are rendered
+    end
+
+    after_all do
+      # called exactly once after all files are rendered
+    end
 
 Blog
 ====
@@ -161,8 +174,14 @@ slashes to URLs.
 TODO
 ====
 
+* support non-markdown blog posts (use dates for file matcher)
+* use real syntax for YAML frontmatter
+* consider using Sprockets instead of own asset stamping
+* add multi templates
+* use triggers `after_render` and `after_write` instead of `@@mapping` hack
+* implement `reset` event on all plugins
 * make each plugin optional
-* use new triggers `after_render` and `after_write` instead of `@@mapping` hack
+* setup homeostasis website
 
 License
 =======

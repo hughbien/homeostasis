@@ -145,6 +145,40 @@ module Homeostasis
     private
   end
 
+  class Event < Stasis::Plugin
+    before_all :before_all_send
+    after_all :after_all_send
+    controller_method :before_all
+    controller_method :after_all
+    reset :reset
+
+    def initialize(stasis)
+      @stasis = stasis
+      reset
+    end
+
+    def before_all(&block)
+      @befores << block
+    end
+
+    def after_all(&block)
+      @afters << block
+    end
+
+    def before_all_send
+      @befores.each { |b| @stasis.action.instance_eval(&b) }
+    end
+
+    def after_all_send
+      @afters.each { |b| @stasis.action.instance_eval(&b) }
+    end
+
+    def reset
+      @befores = []
+      @afters = []
+    end
+  end
+
   class Front < Stasis::Plugin
     include Helpers
     before_all    :before_all
@@ -379,6 +413,7 @@ end
 
 if !ENV['HOMEOSTASIS_UNREGISTER']
   Stasis.register(Homeostasis::Asset)
+  Stasis.register(Homeostasis::Event)
   Stasis.register(Homeostasis::Front)
   Stasis.register(Homeostasis::Trail)
   Stasis.register(Homeostasis::Sitemap)

@@ -13,3 +13,21 @@ Homeostasis::Sitemap.config(
   :lastmod => false)
 
 layout /.*.html(\.haml|\.md)?/ => 'layout.html.haml'
+
+before_all do
+  Homeostasis::Event.instance_variable_set(:@before_fixture, [1])
+end
+
+before_all do
+  fixture = Homeostasis::Event.instance_variable_get(:@before_fixture)
+  fixture << 2
+end
+
+after_all do
+  Homeostasis::Event.instance_variable_set(:@after_fixture, [1])
+end
+
+after_all do
+  fixture = Homeostasis::Event.instance_variable_get(:@after_fixture)
+  fixture << 2
+end

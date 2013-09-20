@@ -6,18 +6,21 @@ end
 
 require 'rubygems'
 require 'stasis'
-require 'minitest/autorun'
 require 'cgi'
+
+gem 'minitest'
+require 'minitest/autorun'
 
 ENV['HOMEOSTASIS_UNREGISTER'] = '1'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis'))
 
-class HomeostasisTest < MiniTest::Unit::TestCase
+class HomeostasisTest < Minitest::Test
   TEST_DIR = File.expand_path(File.dirname(__FILE__))
 
   def setup
     @stasis = Stasis.new(File.join(TEST_DIR, '..', 'fixture'))
     @asset = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Asset) }
+    @event = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Event) }
     @front = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Front) }
     @trail = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Trail) }
     @sitemap = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Sitemap) }
@@ -56,6 +59,13 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert(contents =~ /all\.#{version}\.css/)
   end
 
+  def test_event
+    before_fixture = Homeostasis::Event.instance_variable_get(:@before_fixture)
+    after_fixture = Homeostasis::Event.instance_variable_get(:@after_fixture)
+    assert_equal([1,2], before_fixture)
+    assert_equal([1,2], after_fixture)
+  end
+
   def test_front
     assert_equal(
      ['blog/2012-01-01-hello-world.html.md',
@@ -83,7 +93,6 @@ class HomeostasisTest < MiniTest::Unit::TestCase
     assert_equal('/second-post/', second_post[:path])
     assert_equal('Second Post', second_post[:title])
     assert_equal('2012-01-02', second_post[:date].strftime('%Y-%m-%d'))
-
   end
 
   def test_trail
