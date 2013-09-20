@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'bluecloth'
 require '../lib/homeostasis'
 
 Homeostasis::Asset.concat 'all.css', %w(styles.css)

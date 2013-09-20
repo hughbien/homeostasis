@@ -73,9 +73,9 @@ In your controller:
       :title => 'Blog Title',
       :desc => 'Blog Description for RSS feed')
 
-Post files should be in the format `yyyy-mm-dd-permalink.html.md`.  Use
-YAML front-matter for any metadata you want.  `:date` and `:path` will be
-added automatically for you.
+Post files should be in the format `yyyy-mm-dd-permalink.*`.  Use YAML
+front-matter for any metadata you want.  `:date` and `:path` will be added
+automatically for you.
 
     <!--
       :title: Title Goes Here
@@ -174,7 +174,6 @@ slashes to URLs.
 TODO
 ====
 
-* support non-markdown blog posts (use dates for file matcher)
 * use real syntax for YAML frontmatter
 * consider using Sprockets instead of own asset stamping
 * add multi templates

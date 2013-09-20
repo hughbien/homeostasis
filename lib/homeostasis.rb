@@ -1,10 +1,10 @@
 require 'rubygems'
 require 'stasis'
 require 'digest/sha1'
-require 'bluecloth'
 require 'yaml'
 require 'cgi'
 require 'uri'
+require 'tilt'
 
 module Homeostasis
   module Helpers
@@ -25,6 +25,17 @@ module Homeostasis
 
     def h(html)
       CGI::escapeHTML(html)
+    end
+
+    def render_multi(path, body = nil, context = nil, locals = {})
+      basename = File.basename(path)
+      body ||= File.read(path)
+      templates = basename.split('.')[1..-1].reverse.map { |ext| Tilt[ext] }.compact
+      templates.each do |template|
+        blk = proc { body }
+        body = template.new(path, &blk).render(context, locals)
+      end
+      body
     end
   end
 
@@ -365,7 +376,7 @@ module Homeostasis
         post[:path] = post[:path].sub(
           "/#{@@directory}/#{date}-",
           File.join('/', @@path, '/'))
-        post[:body] = BlueCloth.new(File.read(filename)).to_html if filename =~ /\.md$/
+        post[:body] = render_multi(filename, File.read(filename))
         @@posts << post
       end
       @@posts = @@posts.sort_by { |post| post[:date] }.reverse
