@@ -203,13 +203,7 @@ module Homeostasis
     def initialize(stasis)
       @stasis = stasis
       @@front_site = {}
-      @@matchers = {
-        'erb'  => /<%#/,
-        'haml' => /-#/,
-        'html' => /<!--/,
-        'md'   => /<!--/
-      }
-      @@matcher = /\.erb|\.haml|\.html|\.md/
+      @@matcher = /\.erb|\.haml|\.html|\.md$/
     end
 
     def before_all
@@ -267,7 +261,6 @@ module Homeostasis
     end
 
     def self.config(options)
-      @@matchers = options[:matchers] if options[:matchers]
       @@matcher = options[:matcher] if options[:matcher]
     end
 

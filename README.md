@@ -112,13 +112,7 @@ ERB comments as well:
 
 You can configure which files to check in `controller.rb`.  Here's the default:
 
-    Homeostasis::Front.config(
-      :matchers => {
-        'erb'  => /<%#/,
-        'haml' => /-#/,
-        'html' => /<!--/,
-        'md'   => /<!--/
-      })
+    Homeostasis::Front.config(:matcher => /\.erb|\.haml|\.html|\.md$/)
 
 Just start the file with YAML inside a comment with 2-space indentation.  The
 data will be available from the `front` method in your views and controller.
