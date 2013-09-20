@@ -77,9 +77,9 @@ Post files should be in the format `yyyy-mm-dd-permalink.*`.  Use YAML
 front-matter for any metadata you want.  `:date` and `:path` will be added
 automatically for you.
 
-    <!--
-      :title: Title Goes Here
-    -->
+    ---
+    :title: Title Goes Here
+    ---
 
 You'll have to create your own `blog/index.html`.  Use the `blog_posts` helper
 to construct it:
@@ -93,9 +93,10 @@ Front-Matter YAML
 
 In your views:
 
-    #!
-      :title: Lorem Ipsum
-      :desc:  Quick fox over lazy dog.
+    ---
+    :title: Lorem Ipsum
+    :desc:  Quick fox over lazy dog.
+    ---
     %div
       Page continues as normal here
     %h1= front[:title]
@@ -104,9 +105,9 @@ In your views:
 Note the 2-space indentation is required.  This works for HTML, Markdown, and
 ERB comments as well:
 
-    <!--
-      :title: Lorem Ipsum
-    -->
+    ---
+    :title: Lorem Ipsum
+    ---
     Continue as normal
 
 You can configure which files to check in `controller.rb`.  Here's the default:
@@ -141,16 +142,16 @@ to set the root URL for this to happen:
 `loc` and `lastmod` will be generated for each page.  Use front-yaml to set the
 `changefreq` or `priority`:
 
-    <!--
-      :changefreq: monthly
-      :priority: 0.9
-    -->
+    ---
+    :changefreq: monthly
+    :priority: 0.9
+    ---
 
 Use the key `private` to avoid generating an entry:
 
-    <!--
-      :private: true
-    -->
+    ---
+    :private: true
+    ---
 
 Trailing Slash
 ==============
