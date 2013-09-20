@@ -5,6 +5,8 @@ require 'yaml'
 require 'cgi'
 require 'uri'
 require 'tilt'
+require 'tempfile'
+require 'preamble'
 
 module Homeostasis
   module Helpers
@@ -193,6 +195,8 @@ module Homeostasis
   class Front < Stasis::Plugin
     include Helpers
     before_all    :before_all
+    before_render :before_render
+    after_render  :after_render
     action_method :front
     action_method :front_site
 
@@ -205,25 +209,16 @@ module Homeostasis
         'html' => /<!--/,
         'md'   => /<!--/
       }
+      @@matcher = /\.erb|\.haml|\.html|\.md/
     end
 
     def before_all
       @stasis.paths.each do |path|
-        next if path !~ /\.(#{@@matchers.keys.join('|')})$/
-        if (contents = File.read(path)) !~ @@matchers[File.extname(path)[1..-1]]
-          yaml = {}
-        else
-          lines, data, index = contents.split("\n"), "", 1
-          while index < lines.size
-            break if lines[index] !~ /^  /
-            data += lines[index] + "\n"
-            index += 1
-          end
-          begin
-            yaml = YAML.load(data)
-          rescue Psych::SyntaxError
-            yaml = {}
-          end
+        next if path.nil? || path !~ @@matcher
+        begin
+          yaml, body = Preamble.load(path)
+        rescue
+          yaml, body = [{}, File.read(path)]
         end
 
         # add special :path key for generated files
@@ -237,6 +232,26 @@ module Homeostasis
         end
         @@front_site[front_key(path)] = yaml
       end
+    end
+
+    def before_render
+      @stasis_path = @stasis.path
+      if @stasis.path && @stasis.path =~ @@matcher && !ignore?(@stasis.path)
+        ext = File.basename(@stasis.path).split('.', 2).last
+        begin
+          yaml, body = Preamble.load(@stasis.path) 
+        rescue
+          yaml, body = [{}, File.read(@stasis.path)]
+        end
+        tmpfile = Tempfile.new(['temp', ".#{ext}"])
+        tmpfile.puts(body)
+        tmpfile.close
+        @stasis.path = tmpfile.path
+      end
+    end
+
+    def after_render
+      @stasis.path = @stasis_path
     end
 
     def front
@@ -253,6 +268,7 @@ module Homeostasis
 
     def self.config(options)
       @@matchers = options[:matchers] if options[:matchers]
+      @@matcher = options[:matcher] if options[:matcher]
     end
 
     private

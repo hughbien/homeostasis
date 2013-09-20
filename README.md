@@ -174,8 +174,6 @@ slashes to URLs.
 TODO
 ====
 
-* use real syntax for YAML frontmatter
-* consider using Sprockets instead of own asset stamping
 * add multi templates
 * use triggers `after_render` and `after_write` instead of `@@mapping` hack
 * implement `reset` event on all plugins

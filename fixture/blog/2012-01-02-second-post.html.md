@@ -1,6 +1,6 @@
-<!--
-  :title: Second Post
-  :norss: true
--->
+---
+:title: Second Post
+:norss: true
+---
 
 Lorem Ipsum

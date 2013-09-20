@@ -1,6 +1,6 @@
-<!--
-  :title: Hello World
--->
+---
+:title: Hello World
+---
 
 Lorem Ipsum
 
