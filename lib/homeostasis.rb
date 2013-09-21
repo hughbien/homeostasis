@@ -41,6 +41,14 @@ module Homeostasis
     def render_templates_for(path)
       File.basename(path).split('.')[1..-1].reverse.map { |ext| Tilt[ext] }.compact
     end
+
+    def self.stasis_path
+      @@stasis_path
+    end
+
+    def self.set_stasis_path(stasis, path)
+      @@stasis_path = path if path =~ /^#{stasis.root}/ || path.nil?
+    end
   end
 
   class Asset < Stasis::Plugin
@@ -228,28 +236,28 @@ module Homeostasis
     end
 
     def before_render
-      @stasis_path = @stasis.path
       if @stasis.path && @stasis.path =~ @@matcher && !ignore?(@stasis.path)
         ext = File.basename(@stasis.path).split('.', 2).last
         yaml, body = Front.preamble_load(@stasis.path)
         @tmpfile = Tempfile.new(['temp', ".#{ext}"])
         @tmpfile.puts(body)
         @tmpfile.close
+        Helpers.set_stasis_path(@stasis, @stasis.path)
         @stasis.path = @tmpfile.path
       end
     end
 
     def after_render
       if @tmpfile
-        @stasis.path = @stasis_path if @stasis.path !~ /^#{@stasis.root}/
+        @stasis.path = Helpers.stasis_path if @stasis.path !~ /^#{@stasis.root}/
+        Helpers.set_stasis_path(@stasis, nil)
         @tmpfile.unlink
         @tmpfile = nil
-        @stasis_path = nil
       end
     end
 
     def front
-      @@front_site[front_key(@stasis_path || @stasis.path)] || {}
+      @@front_site[front_key(Helpers.stasis_path || @stasis.path)] || {}
     end
 
     def front_site
@@ -302,7 +310,6 @@ module Homeostasis
     end
 
     def before_render
-      @stasis_path = @stasis.path
       if @stasis.path && !ignore?(@stasis.path)
         exts = File.basename(@stasis.path).split('.')[2..-1]
         return if exts.nil? || exts.length < 2
@@ -313,13 +320,15 @@ module Homeostasis
         @tmpfile = Tempfile.new(["temp", ".txt"])
         @tmpfile.puts(render_multi(@stasis.path, body))
         @tmpfile.close
+        Helpers.set_stasis_path(@stasis, @stasis.path)
         @stasis.path = @tmpfile.path
       end
     end
 
     def after_render
       if @tmpfile
-        @stasis.path = @stasis_path if @stasis.path !~ /^#{@stasis.root}/
+        @stasis.path = Helpers.stasis_path if @stasis.path !~ /^#{@stasis.root}/
+        Helpers.set_stasis_path(@stasis, nil)
         @tmpfile.unlink if @tmpfile
         @tmpfile = nil
       end

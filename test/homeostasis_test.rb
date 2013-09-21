@@ -83,6 +83,7 @@ class HomeostasisTest < Minitest::Test
     assert_equal('Page', page[:title])
     
     page_contents = File.read(dest("page/index.html"))
+    assert(page_contents =~ /<title>Page<\/title>/)
     refute(page_contents =~ /:title/)
 
     index = @front.front_site['index.html.haml']
@@ -90,6 +91,7 @@ class HomeostasisTest < Minitest::Test
     assert_equal('Index', index[:title])
 
     index_contents = File.read(dest("index.html"))
+    assert(index_contents =~ /<title>Index<\/title>/)
     refute(index_contents =~ /:title/)
 
     hello_world = @front.front_site['blog/2012-01-01-hello-world.html.md']
@@ -109,6 +111,7 @@ class HomeostasisTest < Minitest::Test
 
     contents = File.read(dest("multi/index.html"))
     assert(contents =~ /<h1>Header test<\/h1>/)
+    assert(contents =~ /<title>Multi<\/title>/)
     refute(contents =~ /:title/)
   end
 
