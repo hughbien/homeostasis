@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'stasis'
   s.add_development_dependency 'bluecloth'
   s.add_development_dependency 'haml'
+  s.add_development_dependency 'preamble'
   s.add_development_dependency 'tilt'
 
   s.files         = Dir.glob('*.md') + Dir.glob('lib/**/*.rb')

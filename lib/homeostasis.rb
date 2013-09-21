@@ -30,14 +30,16 @@ module Homeostasis
     end
 
     def render_multi(path, body = nil, context = nil, locals = {})
-      basename = File.basename(path)
       body ||= File.read(path)
-      templates = basename.split('.')[1..-1].reverse.map { |ext| Tilt[ext] }.compact
-      templates.each do |template|
+      render_templates_for(path).each do |template|
         blk = proc { body }
         body = template.new(path, &blk).render(context, locals)
       end
       body
+    end
+
+    def render_templates_for(path)
+      File.basename(path).split('.')[1..-1].reverse.map { |ext| Tilt[ext] }.compact
     end
   end
 
@@ -237,15 +239,16 @@ module Homeostasis
         rescue
           yaml, body = [{}, File.read(@stasis.path)]
         end
-        tmpfile = Tempfile.new(['temp', ".#{ext}"])
-        tmpfile.puts(body)
-        tmpfile.close
-        @stasis.path = tmpfile.path
+        @tmpfile = Tempfile.new(['temp', ".#{ext}"])
+        @tmpfile.puts(body)
+        @tmpfile.close
+        @stasis.path = @tmpfile.path
       end
     end
 
     def after_render
       @stasis.path = @stasis_path
+      @tmpfile.unlink if @tmpfile
     end
 
     def front
