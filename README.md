@@ -2,7 +2,7 @@ Description
 ===========
 
 Stasis plugin for asset stamping, before/after_all, blogs, front-matter yaml,
-sitemaps, and trailing slashes.
+multi templates, sitemaps, and trailing slashes.
 
 Installation
 ============
@@ -122,6 +122,19 @@ cross-page access.
 Note that `:path` is automatically assigned if left blank.  Its value will be
 the public path to the page.
 
+Multi Templates
+===============
+
+Use multiple file extensions and have Tilt automatically process them.  The
+filename `example.html.md.erb` will first run through an ERB processor, then
+a Markdown processor:
+
+    # Sample Markdown <%= 1 + 2 %>
+
+Will become:
+
+    <h1>Sample Markdown 3</h1>
+
 Sitemap
 =======
 
@@ -169,9 +182,6 @@ slashes to URLs.
 TODO
 ====
 
-* add multi templates
-* use triggers `after_render` and `after_write` instead of `@@mapping` hack
-* implement `reset` event on all plugins
 * make each plugin optional
 * setup homeostasis website
 

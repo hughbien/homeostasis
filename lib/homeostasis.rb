@@ -201,6 +201,7 @@ module Homeostasis
     after_render  :after_render
     action_method :front
     action_method :front_site
+    priority      2
 
     def initialize(stasis)
       @stasis = stasis
@@ -210,12 +211,8 @@ module Homeostasis
 
     def before_all
       @stasis.paths.each do |path|
-        next if path.nil? || path !~ @@matcher
-        begin
-          yaml, body = Preamble.load(path)
-        rescue
-          yaml, body = [{}, File.read(path)]
-        end
+        yaml, body = Front.preamble_load(path)
+        next if yaml.nil?
 
         # add special :path key for generated files
         if !ignore?(path)
@@ -234,11 +231,7 @@ module Homeostasis
       @stasis_path = @stasis.path
       if @stasis.path && @stasis.path =~ @@matcher && !ignore?(@stasis.path)
         ext = File.basename(@stasis.path).split('.', 2).last
-        begin
-          yaml, body = Preamble.load(@stasis.path) 
-        rescue
-          yaml, body = [{}, File.read(@stasis.path)]
-        end
+        yaml, body = Front.preamble_load(@stasis.path)
         @tmpfile = Tempfile.new(['temp', ".#{ext}"])
         @tmpfile.puts(body)
         @tmpfile.close
@@ -247,12 +240,16 @@ module Homeostasis
     end
 
     def after_render
-      @stasis.path = @stasis_path
-      @tmpfile.unlink if @tmpfile
+      if @tmpfile
+        @stasis.path = @stasis_path if @stasis.path !~ /^#{@stasis.root}/
+        @tmpfile.unlink
+        @tmpfile = nil
+        @stasis_path = nil
+      end
     end
 
     def front
-      @@front_site[front_key(@stasis.path)] || {}
+      @@front_site[front_key(@stasis_path || @stasis.path)] || {}
     end
 
     def front_site
@@ -265,6 +262,13 @@ module Homeostasis
 
     def self.config(options)
       @@matcher = options[:matcher] if options[:matcher]
+    end
+
+    def self.preamble_load(path)
+      return nil if path.nil? || path !~ @@matcher
+      Preamble.load(path)
+    rescue
+      [{}, File.read(path)]
     end
 
     private
@@ -283,6 +287,55 @@ module Homeostasis
       else
         "/#{filename}"
       end
+    end
+  end
+
+  class Multi < Stasis::Plugin
+    include Helpers
+    before_render :before_render
+    after_render  :after_render
+    after_write   :after_write
+    priority      1
+
+    def initialize(stasis)
+      @stasis = stasis
+    end
+
+    def before_render
+      @stasis_path = @stasis.path
+      if @stasis.path && !ignore?(@stasis.path)
+        exts = File.basename(@stasis.path).split('.')[2..-1]
+        return if exts.nil? || exts.length < 2
+
+        yaml, body = Front.preamble_load(@stasis.path)
+        body ||= File.read(@stasis.path)
+
+        @tmpfile = Tempfile.new(["temp", ".txt"])
+        @tmpfile.puts(render_multi(@stasis.path, body))
+        @tmpfile.close
+        @stasis.path = @tmpfile.path
+      end
+    end
+
+    def after_render
+      if @tmpfile
+        @stasis.path = @stasis_path if @stasis.path !~ /^#{@stasis.root}/
+        @tmpfile.unlink if @tmpfile
+        @tmpfile = nil
+      end
+    end
+
+    def after_write
+      return if @stasis.path.nil? || ignore?(@stasis.path)
+      dirname = File.dirname(@stasis.dest)
+      basename = File.basename(@stasis.dest)
+      exts = basename.split('.')[2..-1]
+
+      return if exts.nil? || exts.length < 1
+      exts.each do |ext|
+        basename = basename.sub(/\.#{ext}/, '')
+      end
+      File.rename(@stasis.dest, File.join(dirname, basename))
     end
   end
 
@@ -357,6 +410,7 @@ module Homeostasis
     before_all    :before_all
     after_all     :after_all
     action_method :blog_posts
+    priority      3
 
     def initialize(stasis)
       @stasis = stasis
@@ -438,6 +492,7 @@ if !ENV['HOMEOSTASIS_UNREGISTER']
   Stasis.register(Homeostasis::Asset)
   Stasis.register(Homeostasis::Event)
   Stasis.register(Homeostasis::Front)
+  Stasis.register(Homeostasis::Multi)
   Stasis.register(Homeostasis::Trail)
   Stasis.register(Homeostasis::Sitemap)
   Stasis.register(Homeostasis::Blog)

@@ -13,11 +13,11 @@ Gem::Specification.new do |s|
                   'environments, and a few view helpers.'
  
   s.required_rubygems_version = '>= 1.3.6'
-  s.add_development_dependency 'stasis'
+  s.add_dependency 'stasis'
+  s.add_dependency 'preamble'
+  s.add_dependency 'tilt'
   s.add_development_dependency 'bluecloth'
   s.add_development_dependency 'haml'
-  s.add_development_dependency 'preamble'
-  s.add_development_dependency 'tilt'
 
   s.files         = Dir.glob('*.md') + Dir.glob('lib/**/*.rb')
   s.require_paths = ['lib']

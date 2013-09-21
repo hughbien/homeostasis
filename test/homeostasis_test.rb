@@ -22,6 +22,7 @@ class HomeostasisTest < Minitest::Test
     @asset = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Asset) }
     @event = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Event) }
     @front = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Front) }
+    @multi = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Multi) }
     @trail = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Trail) }
     @sitemap = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Sitemap) }
     @blog = @stasis.plugins.find { |p| p.is_a?(Homeostasis::Blog) }
@@ -73,16 +74,23 @@ class HomeostasisTest < Minitest::Test
       'blog/index.html.haml',
       'index.html.haml',
       'layout.html.haml',
+      'multi.html.md.erb',
       'page.html.md'],
      @front.front_site.keys.sort)
 
     page = @front.front_site['page.html.md']
     assert_equal('/page/', page[:path])
     assert_equal('Page', page[:title])
+    
+    page_contents = File.read(dest("page/index.html"))
+    refute(page_contents =~ /:title/)
 
     index = @front.front_site['index.html.haml']
     assert_equal('/', index[:path])
     assert_equal('Index', index[:title])
+
+    index_contents = File.read(dest("index.html"))
+    refute(index_contents =~ /:title/)
 
     hello_world = @front.front_site['blog/2012-01-01-hello-world.html.md']
     assert_equal('/hello-world/', hello_world[:path])
@@ -93,6 +101,15 @@ class HomeostasisTest < Minitest::Test
     assert_equal('/second-post/', second_post[:path])
     assert_equal('Second Post', second_post[:title])
     assert_equal('2012-01-02', second_post[:date].strftime('%Y-%m-%d'))
+  end
+
+  def test_multi
+    refute(File.exists?(dest("multi.html.md")))
+    assert(File.exists?(dest("multi/index.html")))
+
+    contents = File.read(dest("multi/index.html"))
+    assert(contents =~ /<h1>Header test<\/h1>/)
+    refute(contents =~ /:title/)
   end
 
   def test_trail
