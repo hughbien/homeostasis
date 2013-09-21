@@ -26,7 +26,7 @@ module Homeostasis
     end
 
     def h(html)
-      CGI::escapeHTML(html)
+      CGI::escapeHTML(html.to_s)
     end
 
     def render_multi(path, body = nil, context = nil, locals = {})
@@ -322,7 +322,7 @@ module Homeostasis
         body ||= Helpers.read(@stasis.path)
 
         @tmpfile = Tempfile.new(["temp", ".txt"])
-        @tmpfile.puts(render_multi(@stasis.path, body))
+        @tmpfile.puts(render_multi(@stasis.path, body, @stasis.action))
         @tmpfile.close
         Helpers.set_stasis_path(@stasis, @stasis.path)
         @stasis.path = @tmpfile.path
@@ -455,7 +455,7 @@ module Homeostasis
         post[:path] = post[:path].sub(
           "/#{@@directory}/#{date}-",
           File.join('/', @@path, '/'))
-        post[:body] = render_multi(filename, Helpers.read(filename))
+        post[:body] = render_multi(filename, Helpers.read(filename), @stasis.action)
         @@posts << post
       end
       @@posts = @@posts.sort_by { |post| post[:date] }.reverse

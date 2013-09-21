@@ -32,3 +32,9 @@ after_all do
   fixture = Homeostasis::Event.instance_variable_get(:@after_fixture)
   fixture << 2
 end
+
+helpers do
+  def the_number_one
+    '1'
+  end
+end

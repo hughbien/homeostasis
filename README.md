@@ -182,6 +182,8 @@ slashes to URLs.
 TODO
 ====
 
+* fix blog/multi rendering, will break when using helper methods
+* override `render` to handle multi rendering
 * make each plugin optional
 * setup homeostasis website
 

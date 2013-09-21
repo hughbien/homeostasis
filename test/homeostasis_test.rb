@@ -110,7 +110,7 @@ class HomeostasisTest < Minitest::Test
     assert(File.exists?(dest("multi/index.html")))
 
     contents = Homeostasis::Helpers.read(dest("multi/index.html"))
-    assert(contents =~ /<h1>Header test<\/h1>/)
+    assert(contents =~ /<h1>Header 1<\/h1>/)
     assert(contents =~ /<title>Multi<\/title>/)
     refute(contents =~ /:title/)
   end
