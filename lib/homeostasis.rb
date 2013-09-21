@@ -30,7 +30,7 @@ module Homeostasis
     end
 
     def render_multi(path, body = nil, context = nil, locals = {})
-      body ||= File.read(path)
+      body ||= Helpers.read(path)
       render_templates_for(path).each do |template|
         blk = proc { body }
         body = template.new(path, &blk).render(context, locals)
@@ -40,6 +40,10 @@ module Homeostasis
 
     def render_templates_for(path)
       File.basename(path).split('.')[1..-1].reverse.map { |ext| Tilt[ext] }.compact
+    end
+
+    def self.read(path)
+      File.read(path, encoding: 'UTF-8')
     end
 
     def self.stasis_path
@@ -100,7 +104,7 @@ module Homeostasis
           orig = full_orig[(@stasis.root.length+1)..-1]
           full_dest = File.join(@stasis.destination, @@mapping[orig])
           raise "File not found #{full_dest}" if !File.exists?(full_dest)
-          contents = File.read(full_dest)
+          contents = Helpers.read(full_dest)
           @@mapping.delete(orig)
           File.delete(full_dest)
           contents
@@ -124,7 +128,7 @@ module Homeostasis
       inverted = @@mapping.invert
       Dir.glob("#{@stasis.destination}/**/*").each do |file|
         next if file !~ @@replace_matcher || File.directory?(file)
-        contents = File.read(file)
+        contents = Helpers.read(file)
         front = front_site[inverted[file.sub("#{@stasis.destination}/", "")]]
         assets.each do |old, new|
           old = Regexp.escape(old)
@@ -276,7 +280,7 @@ module Homeostasis
       return nil if path.nil? || path !~ @@matcher
       Preamble.load(path)
     rescue
-      [{}, File.read(path)]
+      [{}, Helpers.read(path)]
     end
 
     private
@@ -315,7 +319,7 @@ module Homeostasis
         return if exts.nil? || exts.length < 2
 
         yaml, body = Front.preamble_load(@stasis.path)
-        body ||= File.read(@stasis.path)
+        body ||= Helpers.read(@stasis.path)
 
         @tmpfile = Tempfile.new(["temp", ".txt"])
         @tmpfile.puts(render_multi(@stasis.path, body))
@@ -451,7 +455,7 @@ module Homeostasis
         post[:path] = post[:path].sub(
           "/#{@@directory}/#{date}-",
           File.join('/', @@path, '/'))
-        post[:body] = render_multi(filename, File.read(filename))
+        post[:body] = render_multi(filename, Helpers.read(filename))
         @@posts << post
       end
       @@posts = @@posts.sort_by { |post| post[:date] }.reverse

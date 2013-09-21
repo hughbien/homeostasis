@@ -34,7 +34,7 @@ class HomeostasisTest < Minitest::Test
   end
 
   def test_asset
-    contents = File.read(dest('index.html'))
+    contents = Homeostasis::Helpers.read(dest('index.html'))
 
     # replaced photo.jpg
     version = Homeostasis::Asset.version(root('photo.jpg'))
@@ -82,7 +82,7 @@ class HomeostasisTest < Minitest::Test
     assert_equal('/page/', page[:path])
     assert_equal('Page', page[:title])
     
-    page_contents = File.read(dest("page/index.html"))
+    page_contents = Homeostasis::Helpers.read(dest("page/index.html"))
     assert(page_contents =~ /<title>Page<\/title>/)
     refute(page_contents =~ /:title/)
 
@@ -90,7 +90,7 @@ class HomeostasisTest < Minitest::Test
     assert_equal('/', index[:path])
     assert_equal('Index', index[:title])
 
-    index_contents = File.read(dest("index.html"))
+    index_contents = Homeostasis::Helpers.read(dest("index.html"))
     assert(index_contents =~ /<title>Index<\/title>/)
     refute(index_contents =~ /:title/)
 
@@ -109,7 +109,7 @@ class HomeostasisTest < Minitest::Test
     refute(File.exists?(dest("multi.html.md")))
     assert(File.exists?(dest("multi/index.html")))
 
-    contents = File.read(dest("multi/index.html"))
+    contents = Homeostasis::Helpers.read(dest("multi/index.html"))
     assert(contents =~ /<h1>Header test<\/h1>/)
     assert(contents =~ /<title>Multi<\/title>/)
     refute(contents =~ /:title/)
@@ -129,7 +129,7 @@ class HomeostasisTest < Minitest::Test
   def test_sitemap
     assert(File.exists?(dest("sitemap.xml")))
 
-    xml = File.read(dest("sitemap.xml"))
+    xml = Homeostasis::Helpers.read(dest("sitemap.xml"))
     assert(xml =~ /<loc>http:\/\/local\.fixture\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/page\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/<\/loc>/)
@@ -160,7 +160,7 @@ class HomeostasisTest < Minitest::Test
       posts.map { |p| p[:date].strftime('%Y-%m-%d') })
 
     assert(File.exists?(dest("/rss.xml")))
-    rss = File.read(dest("/rss.xml"))
+    rss = Homeostasis::Helpers.read(dest("/rss.xml"))
     assert_match("Sun, 01 Jan 2012 0:00:01 #{Time.new.zone}", rss)
     assert_match(CGI.escapeHTML('href="http://local.fixture/link/"'), rss)
     assert_match(CGI.escapeHTML('src="http://local.fixture/photo.'), rss)
