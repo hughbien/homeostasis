@@ -230,10 +230,10 @@ module Homeostasis
         if !ignore?(path)
           relative = path[(@stasis.root.length+1)..-1]
           ext = Tilt.mappings.keys.find { |ext| File.extname(path)[1..-1] == ext }
-          dest = trailify((ext && File.extname(relative) == ".#{ext}") ?
+          dest = (ext && File.extname(relative) == ".#{ext}") ?
             relative[0..-1*ext.length-2] :
-            relative)
-          yaml[:path] = dest
+            relative
+          yaml[:path] = trailify(Multi.drop_tilt_exts(dest))
         end
         @@front_site[front_key(path)] = yaml
       end
@@ -272,6 +272,10 @@ module Homeostasis
       @@front_site
     end
 
+    def self._front_key(stasis, filename) # for other plugins
+      filename.sub(stasis.root, '')[1..-1]
+    end
+
     def self.config(options)
       @@matcher = options[:matcher] if options[:matcher]
     end
@@ -285,7 +289,7 @@ module Homeostasis
 
     private
     def front_key(filename)
-      filename.sub(@stasis.root, '')[1..-1]
+      self.class._front_key(@stasis, filename)
     end
 
     def trailify(filename)
@@ -340,15 +344,20 @@ module Homeostasis
 
     def after_write
       return if @stasis.path.nil? || ignore?(@stasis.path)
-      dirname = File.dirname(@stasis.dest)
-      basename = File.basename(@stasis.dest)
-      exts = basename.split('.')[2..-1]
+      dest = self.class.drop_tilt_exts(@stasis.dest)
+      File.rename(@stasis.dest, dest) if dest != @stasis.dest
+    end
 
-      return if exts.nil? || exts.length < 1
+    def self.drop_tilt_exts(path)
+      dirname = File.dirname(path)
+      basename = File.basename(path)
+      exts = basename.split('.')[2..-1]
+      return path if exts.nil? || exts.length < 1
+
       exts.each do |ext|
         basename = basename.sub(/\.#{ext}/, '')
       end
-      File.rename(@stasis.dest, File.join(dirname, basename))
+      File.join(dirname, basename)
     end
   end
 
@@ -421,6 +430,7 @@ module Homeostasis
     include Helpers
     DATE_REGEX = /^(\d{4}-\d{2}-\d{2})-/
     before_all    :before_all
+    before_render :before_render
     after_all     :after_all
     action_method :blog_posts
     priority      3
@@ -451,14 +461,25 @@ module Homeostasis
         next if File.basename(filename) !~ DATE_REGEX
         date = $1
         post = front_site[filename.sub(@stasis.root, '')[1..-1]] || {}
+        post[:blog] = true
         post[:date] = Date.parse(date)
         post[:path] = post[:path].sub(
           "/#{@@directory}/#{date}-",
           File.join('/', @@path, '/'))
-        post[:body] = render_multi(filename, Helpers.read(filename), @stasis.action)
         @@posts << post
       end
       @@posts = @@posts.sort_by { |post| post[:date] }.reverse
+    end
+
+    def before_render
+      path = Helpers.stasis_path || @stasis.path
+      return if path.nil?
+
+      post = Homeostasis::Front._front_site[Homeostasis::Front._front_key(@stasis, path)]
+      if post && post[:blog] && post[:date] && post[:path]
+        yaml, body = Front.preamble_load(path)
+        post[:body] = render_multi(path, body, @stasis.action)
+      end
     end
 
     def after_all

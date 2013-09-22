@@ -69,7 +69,7 @@ class HomeostasisTest < Minitest::Test
 
   def test_front
     assert_equal(
-     ['blog/2012-01-01-hello-world.html.md',
+     ['blog/2012-01-01-hello-world.html.md.erb',
       'blog/2012-01-02-second-post.html.md',
       'blog/index.html.haml',
       'index.html.haml',
@@ -94,7 +94,7 @@ class HomeostasisTest < Minitest::Test
     assert(index_contents =~ /<title>Index<\/title>/)
     refute(index_contents =~ /:title/)
 
-    hello_world = @front.front_site['blog/2012-01-01-hello-world.html.md']
+    hello_world = @front.front_site['blog/2012-01-01-hello-world.html.md.erb']
     assert_equal('/hello-world/', hello_world[:path])
     assert_equal('Hello World', hello_world[:title])
     assert_equal('2012-01-01', hello_world[:date].strftime('%Y-%m-%d'))
@@ -165,6 +165,7 @@ class HomeostasisTest < Minitest::Test
     assert_match(CGI.escapeHTML('href="http://local.fixture/link/"'), rss)
     assert_match(CGI.escapeHTML('src="http://local.fixture/photo.'), rss)
     assert_match("Hello World", rss)
+    assert_match("The Number One: 1", rss)
     refute_match("Second Post", rss)
   end
 
