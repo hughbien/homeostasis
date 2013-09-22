@@ -48,6 +48,8 @@ module Homeostasis
 
     def self.stasis_path
       @@stasis_path
+    rescue NameError
+      nil
     end
 
     def self.set_stasis_path(stasis, path)
