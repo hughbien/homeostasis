@@ -102,14 +102,6 @@ In your views:
     %h1= front[:title]
     %p= front[:desc]
 
-Note the 2-space indentation is required.  This works for HTML, Markdown, and
-ERB comments as well:
-
-    ---
-    :title: Lorem Ipsum
-    ---
-    Continue as normal
-
 You can configure which files to check in `controller.rb`.  Here's the default:
 
     Homeostasis::Front.config(:matcher => /\.erb|\.haml|\.html|\.md$/)
@@ -184,7 +176,6 @@ TODO
 
 * override `render` to handle multi rendering
 * make each plugin optional
-* setup homeostasis website
 
 License
 =======

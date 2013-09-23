@@ -1,0 +1,247 @@
+!!! 5
+%html
+  %head
+    %title= 'Homeostasis - a useful collection of Stasis plugins'
+    %link(rel='stylesheet' href='/all.css' media='all')
+    -#
+      %link(rel='shortcut icon' href='/favicon.ico' type='image/vnd.microsoft.icon')
+    %meta(charset='utf-8')
+    %meta(name='viewport' content='initial-scale=1.0,width=device-width')
+    %meta(name='description' content='Homeostasis includes stasis plugins for asset stamping, before/after_all hooks, blogs, front-matter yaml, multi templates, sitemaps, and trailing slashes.')
+  %body
+    .frame
+      %h1 Homeostasis &mdash; a useful collection of Stasis plugins
+      %h2 asset stamping, blogs, front-matter, hooks, &amp; more
+
+      .about
+        %p
+          %a{href: 'http://stasis.me'} Stasis
+          is a powerful static site generator.  Homeostasis is a collection
+          of plugins extending Stasis.  Check out
+          <a href="https://github.com/hughbien/homeostasis">Homeostasis' source code on GitHub</a>.  Homeostasis is still in pre-alpha development.
+
+      .feature-border
+      .feature
+        %h3 Installation
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                <strong class="prompt">$</strong> gem install homeostasis
+                <strong class="prompt">$</strong> vim /path/to/project/controller.rb
+
+                <span class="comment"># /path/to/project/controller.rb</span>
+                require 'homeostasis'
+
+
+        %p
+          Install the gem as normal and require it at the beginning
+          of your <code>controller.rb</code> file.
+
+      .feature-border
+      .feature
+        %h3 Asset Stamping
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                <span class="comment"># default configuration</span>
+                Homeostasis::Asset.config(
+                  replace_matcher: /\.(html|css|js)$/i,
+                  matcher: /\.(jpg|png|gif|css|js)$/i)
+
+                Homeostasis::Asset.concat('all.js', %w(one.js two.js))
+                Homeostasis::Asset.concat('all.css', %w(one.css two.css))
+
+        %p
+          Asset stamping assumes that your project lives in a git repository.
+          By default, assets are files with extensions:
+
+        %ul
+          %li jpg
+          %li png
+          %li gif
+          %li css
+          %li js
+
+        %p
+          They'll be stamped like <code>script.js =&gt; script.sha1.js</code>.
+          Homeostasis will search in HTML, CSS, and JS source files and replace
+          assets with their sha1 stamped filenames.
+
+        %p
+          Multiple assets can also be concatenated into a single file (useful for
+          CSS and JavaScript).
+
+      .feature-border
+      .feature
+        %h3 Before &amp; After All Hooks
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                before_all do
+                  <span class="comment"># called exactly once before all files are rendered</span>
+                end
+
+                after_all do
+                  <span class="comment"># called exactly once after all files are rendered</span>
+                end
+
+        %p
+          <code>before_all</code> and <code>after_all</code>
+          are similar to the <code>before</code> method, except they're
+          hooked into site-wide creation instead of each single file.
+
+      .feature-border
+      .feature
+        %h3 Blogs
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                <span class="comment"># controller.rb</span>
+                Homeostasis::Blog.config(
+                  :directory => 'blog', # directory of posts, required
+                  :url => 'http://example.com', # site url, required
+                  :title => 'Blog Title',
+                  :desc => 'Blog Description for RSS feed')
+
+                <span class="comment"># blog/yyyy-mm-dd-permalink.md</span>
+                ---
+                :title: Post Title Goes Here
+                ---
+                Post body goes here.
+
+                <span class="comment"># blog/index.html.haml</span>
+                - blog_posts.each do |post|
+                  %span.date post[:date].strftime("%m/%d/%Y")
+                  %a{:href => post[:path]}= post[:title]
+
+
+        %p
+          Write your blog posts in markdown (or even Haml).  Homeostasis
+          will generate an RSS feed for you at <code>/blog/rss.xml</code>.
+
+        %p
+          Templates also get access to a <code>blog_posts</code> method
+          which includes a list of all posts.
+
+      .feature-border
+      .feature
+        %h3 Front-matter YAML
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                <span class="comment"># controller.rb</span>
+                Homeostasis::Front.config(matcher: /\.erb|\.haml|\.html|\.md$/)
+
+                <span class="comment"># random haml file</span>
+                ---
+                :title: Lorem Ipsum
+                :desc:  Quick fox over lazy dog.
+                ---
+                %div
+                  Page continues as normal here
+                %h1= front[:title]
+                %p= front[:desc]
+
+        %p
+          Views and actions in controllers get access to the <code>front</code>
+          method, a hash with access to the front-matter YAML of the current file.
+
+        %p
+          There's also <code>front_site</code>, which provides site-wide access
+          to all front-matter YAML.
+
+        %p
+          By default, front-matter YAML is only checked on files with extensions:
+          erb, haml, html, and md.  You can configure this by using
+          <code>Homeostasis::Front#config</code>.
+
+      .feature-border
+      .feature
+        %h3 Multi Templates
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                <span class="comment"># example.html.md.erb</span>
+                **Sample Markdown <%= 1 + 2 %>**
+
+                <span class="comment"># public/example.html</span>
+                &lt;strong&gt;Sample Markdown 3&lt;/strong&gt;
+
+        %p
+          Use multiple file extensions and have Tilt automatically process them.
+          Files ending with <code>.html.md.erb</code> will be processed with ERB,
+          followed by Markdown.
+
+      .feature-border
+      .feature
+        %h3 Sitemaps
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                <span class="comment"># controller.rb</span>
+                Homeostasis::Sitemap.config(
+                  url: 'http://example.com',  # required
+                  lastmod: false              # default is true
+                )
+
+                <span class="comment"># view-file.html.haml</span>
+                ---
+                :changefreq: monthly
+                :priority: 0.9
+                :private: false
+                ---
+
+        %p
+          A sitemap will be generated in <code>public/sitemap.xml</code>.
+          Configuration is required.
+
+        %p
+          Use <code>:private: true</code> in a file's front-matter YAML to
+          avoid generating an entry in the sitemap.  You can also use
+          <code>:changefreq:</code> and <code>:priority:</code>.
+
+      .feature-border
+      .feature
+        %h3 Trailing Slashes
+
+        %pre
+          %code
+            = preserve do
+              :plain
+                <span class="comment"># sample .htaccess</span>
+                RewriteCond %{REQUEST_FILENAME} !-f
+                RewriteCond %{REQUEST_URI} !(.*)/$
+                RewriteRule ^(.*)$ http://example.com/$1/ [R=permanent,L] 
+
+        %p
+          Turns every page into a directory with an <code>index.html</code> file,
+          enforcing trailing slashes.  This pairs well with the provided <code>htaccess</code>
+          file.
+          
+        %p
+          For example:
+          <code>index.html</code> =&gt;<code>index.html</code>,
+          <code>blog.html</code> =&gt; <code>blog/index.html</code>,
+          <code>about.html</code> =&gt; <code>about/index.html</code>.
+
+      .feature-border
+      .about.foot
+        %p
+          Homeostasis is released under the
+          <a href="https://github.com/hughbien/homeostasis/blob/master/LICENSE.md">BSD License</a>
+          and developed by
+          <a href="http://hughbien.com">Hugh Bien</a>.  Follow me via <a href="https://twitter.com/hughbien">@hughbien</a>.

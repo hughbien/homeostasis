@@ -3,3 +3,5 @@
 Gemfile.lock
 fixture/public
 coverage
+site/.sass-cache
+site/public
