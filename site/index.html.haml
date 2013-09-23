@@ -51,8 +51,8 @@
                   replace_matcher: /\.(html|css|js)$/i,
                   matcher: /\.(jpg|png|gif|css|js)$/i)
 
-                Homeostasis::Asset.concat('all.js', %w(one.js two.js))
-                Homeostasis::Asset.concat('all.css', %w(one.css two.css))
+                Homeostasis::Asset.concat('both.js', %w(one.js two.js))
+                Homeostasis::Asset.concat('both.css', %w(one.css two.css))
 
         %p
           Asset stamping assumes that your project lives in a git repository.
