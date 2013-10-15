@@ -2,15 +2,11 @@
 @import "compass/css3/images";
 @import "compass/css3/transition";
 @import "compass/css3/user-interface";
+@import "compass/css3/font-face";
 
-@font-face {
-  font-family: 'homeostasis'; font-style: normal; font-weight: 400;
-  src: url(/font/regular.ttf), url(/font/regular.eot);
-}
-@font-face {
-  font-family: 'homeostasis'; font-style: normal; font-weight: 700;
-  src: url(/font/bold.ttf), url(/font/bold.eot);
-}
+// -- Fonts --
+@include font-face("homeostasis", font-files("regular.ttf"), "regular.eot", 400, normal);
+@include font-face("homeostasis", font-files("bold.ttf"), "bold.eot", 700, normal);
 
 body { background: #282828 url(/bg.png); font-size: 15px; margin: 0 0 4em;
   font-family: homeostasis, "trebuchet ms", sans-serif; color: #fff; }
