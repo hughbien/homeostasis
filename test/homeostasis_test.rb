@@ -69,7 +69,8 @@ class HomeostasisTest < Minitest::Test
 
   def test_front
     assert_equal(
-     ['blog/2012-01-01-hello-world.html.md.erb',
+     ['_utf8.html.haml',
+      'blog/2012-01-01-hello-world.html.md.erb',
       'blog/2012-01-02-second-post.html.md',
       'blog/index.html.haml',
       'index.html.haml',

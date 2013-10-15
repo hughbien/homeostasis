@@ -13,6 +13,7 @@ Homeostasis::Sitemap.config(
   :lastmod => false)
 
 layout /.*.html(\.haml|\.md)?/ => 'layout.html.haml'
+ignore '_utf8.html.haml'
 
 before_all do
   Homeostasis::Event.instance_variable_set(:@before_fixture, [1])

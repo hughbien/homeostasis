@@ -174,7 +174,10 @@ slashes to URLs.
 TODO
 ====
 
+* fix `.min.*` files
+* fix `render` to work with Front/Multi plugins (maybe override Tilt#render? instead of using hooks)
 * override `render` to handle multi rendering
+* use Sprockets instead of own asset handler
 * make each plugin optional
 
 License
