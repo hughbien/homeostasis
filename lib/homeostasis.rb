@@ -331,7 +331,6 @@ module Homeostasis
         @tmpfile.puts(render_multi(@stasis.path, body, @stasis.action))
         @tmpfile.close
         Helpers.set_stasis_path(@stasis, @stasis.path)
-        puts "Multi: #{@stasis.path} => #{@tmpfile.path}"
         @stasis.path = @tmpfile.path
       end
     end
