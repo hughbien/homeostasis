@@ -6,7 +6,7 @@ Compass.configuration do |config|
   config.fonts_dir = 'font'
 end
 Homeostasis::Asset.concat 'all.css', %w(styles.css)
-Homeostasis::Sitemap.config(url: 'http://thymerb.com')
+Homeostasis::Sitemap.config(url: 'http://homeostasisrb.com')
 
 ignore /\/_.*/
 ignore /\/\.saas-cache\/.*/
