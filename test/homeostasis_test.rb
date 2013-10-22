@@ -47,8 +47,8 @@ class HomeostasisTest < Minitest::Test
     refute(contents =~ /photo\.jpg/)
     assert(contents =~ /photo\.#{version}\.jpg/)
 
-    # concat style.css => all.css
-    version = Homeostasis::Asset.version(root('styles.css'))
+    # concat style.min.css => all.css
+    version = Homeostasis::Asset.version(root('styles.min.css'))
     assert_equal(40, version.length)
     assert_equal(
       "all.#{version}.css",

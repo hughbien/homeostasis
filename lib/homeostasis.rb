@@ -42,6 +42,10 @@ module Homeostasis
       File.basename(path).split('.')[1..-1].reverse.map { |ext| Tilt[ext] }.compact
     end
 
+    def self.tilt_exts_for(path)
+      File.basename(path).split('.')[1..-1].reverse.select { |ext| Tilt[ext] }
+    end
+
     def self.read(path)
       File.read(path, encoding: 'UTF-8')
     end
@@ -321,7 +325,7 @@ module Homeostasis
 
     def before_render
       if @stasis.path && !ignore?(@stasis.path)
-        exts = File.basename(@stasis.path).split('.')[2..-1]
+        exts = Helpers.tilt_exts_for(@stasis.path)
         return if exts.nil? || exts.length < 2
 
         yaml, body = Front.preamble_load(@stasis.path)
@@ -353,7 +357,7 @@ module Homeostasis
     def self.drop_tilt_exts(path)
       dirname = File.dirname(path)
       basename = File.basename(path)
-      exts = basename.split('.')[2..-1]
+      exts = Helpers.tilt_exts_for(basename)
       return path if exts.nil? || exts.length < 1
 
       exts.each do |ext|

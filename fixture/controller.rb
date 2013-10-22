@@ -1,7 +1,7 @@
 require 'rubygems'
 require '../lib/homeostasis'
 
-Homeostasis::Asset.concat 'all.css', %w(styles.css)
+Homeostasis::Asset.concat 'all.css', %w(styles.min.css)
 Homeostasis::Blog.config(
   :directory => 'blog',
   :path => '',
