@@ -8,13 +8,12 @@ require 'rubygems'
 require 'stasis'
 require 'cgi'
 
-gem 'minitest'
 require 'minitest/autorun'
 
 ENV['HOMEOSTASIS_UNREGISTER'] = '1'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis'))
 
-class HomeostasisTest < Minitest::Test
+class HomeostasisTest < MiniTest::Unit::TestCase
   TEST_DIR = File.expand_path(File.dirname(__FILE__))
 
   def setup
