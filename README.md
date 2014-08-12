@@ -174,18 +174,15 @@ slashes to URLs.
 TODO
 ====
 
-* accept symbols + strings for front matter yaml
-* scheduling posts
+* ruby 2.1 support
+* fix directory structure to use standard gem directories
+* fix front matter yaml to handle symbols/strings (look into Hashie)
 * fix filenames like 'jquery-1.9.1.js'
 * fix `render` to work with Front/Multi plugins (maybe override Tilt#render? instead of using hooks)
-* override `render` to handle multi rendering
-* use Sprockets instead of own asset handler
-* make each plugin optional
-* add pjax/similar support (static fragments/partials rendered under separate directory)
-* alternative to pjax, json responses?
-* drip RSS feed
-* publish flag (pair with cron for auto publishing)
-* dateless blogs? + regenerate script (pair with cron for rolling RSS feeds, blog indexes, etc...)
+* fix `render` to handle multi rendering
+* fix sitemap "." in URL
+* fix images in RSS
+* fix plugin architecture to make each optional
 
 License
 =======

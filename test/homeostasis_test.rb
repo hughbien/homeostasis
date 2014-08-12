@@ -4,16 +4,17 @@ if ENV['HOMEOSTASIS_COVERAGE']
   SimpleCov.start
 end
 
-require 'rubygems'
 require 'stasis'
 require 'cgi'
-
+require 'redcarpet'
+require 'erubis'
+require 'haml'
 require 'minitest/autorun'
 
 ENV['HOMEOSTASIS_UNREGISTER'] = '1'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'homeostasis'))
 
-class HomeostasisTest < MiniTest::Unit::TestCase
+class HomeostasisTest < Minitest::Test
   TEST_DIR = File.expand_path(File.dirname(__FILE__))
 
   def setup

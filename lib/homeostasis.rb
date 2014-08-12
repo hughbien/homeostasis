@@ -288,7 +288,8 @@ module Homeostasis
 
     def self.preamble_load(path)
       return nil if path.nil? || path !~ @@matcher
-      Preamble.load(path)
+      data = Preamble.load(path)
+      [data.metadata, data.content]
     rescue
       [{}, Helpers.read(path)]
     end
