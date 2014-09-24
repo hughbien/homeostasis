@@ -112,14 +112,14 @@
 
                 <span class="comment"># blog/yyyy-mm-dd-permalink.md</span>
                 ---
-                :title: Post Title Goes Here
+                title: Post Title Goes Here
                 ---
                 Post body goes here.
 
                 <span class="comment"># blog/index.html.haml</span>
                 - blog_posts.each do |post|
-                  %span.date post[:date].strftime("%m/%d/%Y")
-                  %a{:href => post[:path]}= post[:title]
+                  %span.date post['date'].strftime("%m/%d/%Y")
+                  %a{:href => post['path']}= post['title']
 
 
         %p
@@ -143,13 +143,13 @@
 
                 <span class="comment"># random haml file</span>
                 ---
-                :title: Lorem Ipsum
-                :desc:  Quick fox over lazy dog.
+                title: Lorem Ipsum
+                desc:  Quick fox over lazy dog.
                 ---
                 %div
                   Page continues as normal here
-                %h1= front[:title]
-                %p= front[:desc]
+                %h1= front['title']
+                %p= front['desc']
 
         %p
           Views and actions in controllers get access to the <code>front</code>
@@ -199,9 +199,9 @@
 
                 <span class="comment"># view-file.html.haml</span>
                 ---
-                :changefreq: monthly
-                :priority: 0.9
-                :private: false
+                changefreq: monthly
+                priority: 0.9
+                private: false
                 ---
 
         %p

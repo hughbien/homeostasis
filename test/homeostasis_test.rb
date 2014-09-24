@@ -106,6 +106,16 @@ class HomeostasisTest < Minitest::Test
     assert_equal('2012-01-02', second_post[:date].strftime('%Y-%m-%d'))
   end
 
+  def test_front_hash
+    hash = Homeostasis::FrontHash.from_hash(a: 1, b: 2)
+    assert_equal(1, hash['a'])
+    assert_equal(1, hash[:a])
+    assert(hash.has_key?(:b))
+    assert(hash.has_key?('b'))
+    refute(hash.has_key?(:c))
+    refute(hash.has_key?('c'))
+  end
+
   def test_multi
     refute(File.exists?(dest("multi.html.md")))
     assert(File.exists?(dest("multi/index.html")))
@@ -159,6 +169,8 @@ class HomeostasisTest < Minitest::Test
     assert_equal(
       ['2012-01-02', '2012-01-01'],
       posts.map { |p| p[:date].strftime('%Y-%m-%d') })
+    assert(posts[0].has_key?(:norss))
+    refute(posts[1].has_key?(:norss))
 
     assert(File.exists?(dest("/rss.xml")))
     rss = Homeostasis::Helpers.read(dest("/rss.xml"))

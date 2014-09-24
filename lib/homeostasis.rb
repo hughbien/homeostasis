@@ -224,7 +224,7 @@ module Homeostasis
 
     def initialize(stasis)
       @stasis = stasis
-      @@front_site = {}
+      @@front_site = FrontHash.new
       @@matcher = /\.erb|\.haml|\.html|\.md$/
     end
 
@@ -242,7 +242,7 @@ module Homeostasis
             relative
           yaml[:path] = trailify(Multi.drop_tilt_exts(dest))
         end
-        @@front_site[front_key(path)] = yaml
+        @@front_site[front_key(path)] = FrontHash.from_hash(yaml)
       end
     end
 
@@ -268,7 +268,7 @@ module Homeostasis
     end
 
     def front
-      @@front_site[front_key(Helpers.stasis_path || @stasis.path)] || {}
+      @@front_site[front_key(Helpers.stasis_path || @stasis.path)] || FrontHash.new
     end
 
     def front_site
@@ -527,6 +527,26 @@ module Homeostasis
     def blog_posts
       raise 'Homeostasis::Blog#config never called' if @@directory.nil?
       @@posts
+    end
+  end
+
+  class FrontHash < Hash
+    def [](key)
+      super(key.to_s)
+    end
+
+    def []=(key, value)
+      super(key.to_s, value)
+    end
+
+    def has_key?(key)
+      super(key.to_s)
+    end
+
+    def self.from_hash(hash)
+      front_hash = self.new
+      hash.each { |k,v| front_hash[k] = v }
+      front_hash
     end
   end
 end
