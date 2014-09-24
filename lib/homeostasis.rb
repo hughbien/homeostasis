@@ -6,6 +6,7 @@ require 'cgi'
 require 'uri'
 require 'tilt'
 require 'tempfile'
+require 'pathname'
 require 'preamble'
 
 module Homeostasis
@@ -301,7 +302,8 @@ module Homeostasis
 
     def trailify(filename)
       @trail_included ||= @stasis.plugins.any? { |plugin| plugin.is_a?(Homeostasis::Trail) }
-      if filename == 'index.html'
+      filename = Pathname.new(filename.to_s).cleanpath.to_s
+      path = if filename == 'index.html'
         '/'
       elsif File.basename(filename) == 'index.html'
         "/#{File.dirname(filename)}/"

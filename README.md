@@ -174,13 +174,11 @@ slashes to URLs.
 TODO
 ====
 
-* ruby 2.1 support
-* fix directory structure to use standard gem directories
 * fix front matter yaml to handle symbols/strings (look into Hashie)
+* fix work on templates without front-matter yaml
+* fix directory structure to use standard gem directories
 * fix filenames like 'jquery-1.9.1.js'
 * fix `render` to work with Front/Multi plugins (maybe override Tilt#render? instead of using hooks)
-* fix `render` to handle multi rendering
-* fix sitemap "." in URL
 * fix images in RSS
 * fix plugin architecture to make each optional
 
