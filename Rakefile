@@ -46,6 +46,6 @@ namespace :site do
 
   desc 'Remove built site artifacts'
   task :clean do
-    rm_r 'site/public'
+    rm_rf 'site/public'
   end
 end
