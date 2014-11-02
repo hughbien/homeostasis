@@ -72,6 +72,7 @@ class HomeostasisTest < Minitest::Test
      ['_utf8.html.haml',
       'blog/2012-01-01-hello-world.html.md.erb',
       'blog/2012-01-02-second-post.html.md',
+      'blog/2099-01-01-future-post.html.md',
       'blog/index.html.haml',
       'index.html.haml',
       'layout.html.haml',
@@ -145,7 +146,8 @@ class HomeostasisTest < Minitest::Test
     assert(xml =~ /<loc>http:\/\/local\.fixture\/page\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/blog\/<\/loc>/)
     assert(xml =~ /<loc>http:\/\/local\.fixture\/hello-world\/<\/loc>/)
-    assert(xml =~ /<loc>http:\/\/local\.fixture\/second-post\/<\/loc>/)
+    refute(xml =~ /<loc>http:\/\/local\.fixture\/second-post\/<\/loc>/) # private post
+    refute(xml =~ /<loc>http:\/\/local\.fixture\/future-post\/<\/loc>/) # future post
     assert_equal(0, xml.scan("<lastmod>").length)
   end
 
@@ -156,21 +158,16 @@ class HomeostasisTest < Minitest::Test
     assert(File.exists?(dest("/blog/index.html")))
     assert(File.exists?(dest("/hello-world/index.html")))
     assert(File.exists?(dest("/second-post/index.html")))
+    assert(File.exists?(dest("/future-post/index.html")))
     refute(File.exists?(dest("/blog/2012-01-01-hello-world.html")))
     refute(File.exists?(dest("/blog/2012-01-02-second-post.html")))
+    refute(File.exists?(dest("/blog/2099-01-01-future-post.html")))
 
     posts = @blog.blog_posts
-    assert_equal(
-      ['Second Post', 'Hello World'],
-      posts.map { |p| p[:title] })
-    assert_equal(
-      ['/second-post/', '/hello-world/'],
-      posts.map { |p| p[:path] })
-    assert_equal(
-      ['2012-01-02', '2012-01-01'],
-      posts.map { |p| p[:date].strftime('%Y-%m-%d') })
-    assert(posts[0].has_key?(:norss))
-    refute(posts[1].has_key?(:norss))
+    assert_equal(1, posts.length) # doesn't include private posts
+    assert_equal('/hello-world/', posts[0][:path])
+    assert_equal('2012-01-01', posts[0][:date].strftime('%Y-%m-%d'))
+    refute(posts[0].has_key?(:private))
 
     assert(File.exists?(dest("/rss.xml")))
     rss = Homeostasis::Helpers.read(dest("/rss.xml"))
@@ -180,6 +177,7 @@ class HomeostasisTest < Minitest::Test
     assert_match("Hello World", rss)
     assert_match("The Number One: 1", rss)
     refute_match("Second Post", rss)
+    refute_match("Future Post", rss)
   end
 
   private

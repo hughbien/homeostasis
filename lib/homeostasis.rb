@@ -475,9 +475,10 @@ module Homeostasis
         post[:path] = post[:path].sub(
           "/#{@@directory}/#{date}-",
           File.join('/', @@path, '/'))
+        post[:private] = true if post[:date] > Date.today
         @@posts << post
       end
-      @@posts = @@posts.sort_by { |post| post[:date] }.reverse
+      @@posts = @@posts.reject { |p| p[:private] }.sort_by { |p| p[:date] }.reverse
     end
 
     def before_render
@@ -507,7 +508,7 @@ module Homeostasis
       rss += "    <title>#{h @@title}</title>\n" if @@title
       rss += "    <link>#{h @@url}/</link>\n" if @@url
       rss += "    <description>#{h @@desc}</description>\n" if @@desc
-      blog_posts.reject {|p| p.has_key?(:norss) }[0..5].each do |post|
+      blog_posts[0..5].each do |post|
         body = post[:body]
         body.gsub!(/(href|src)=('|")\//, "\\1=\\2#{@@url}/")
         rss += "    <item>\n"
