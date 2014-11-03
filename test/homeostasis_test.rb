@@ -171,7 +171,7 @@ class HomeostasisTest < Minitest::Test
 
     assert(File.exists?(dest("/rss.xml")))
     rss = Homeostasis::Helpers.read(dest("/rss.xml"))
-    assert_match("Sun, 01 Jan 2012 0:00:01 #{Time.new.zone}", rss)
+    assert_match("Sun, 01 Jan 2012 12:00:00 UTC", rss)
     assert_match(CGI.escapeHTML('href="http://local.fixture/link/"'), rss)
     assert_match(CGI.escapeHTML('src="http://local.fixture/photo.'), rss)
     assert_match("Hello World", rss)
