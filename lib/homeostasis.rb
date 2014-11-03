@@ -513,7 +513,7 @@ module Homeostasis
         rss += "    <item>\n"
         rss += "      <title>#{h post[:title]}</title>\n"
         rss += "      <link>#{h(File.join(@@url, post[:path]))}</link>\n"
-        rss += "      <pubDate>#{post[:date].strftime("%a, %d %b %Y 12:00:00 UTC")}</pubDate>\n"
+        rss += "      <pubDate>#{post[:date].strftime("%a, %d %b %Y 12:00:00 UT")}</pubDate>\n"
         rss += "      <description>#{h post[:body]}</description>\n"
         rss += "    </item>\n"
       end
