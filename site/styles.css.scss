@@ -5,10 +5,10 @@
 @import "compass/css3/font-face";
 
 // -- Fonts --
-@include font-face("homeostasis", font-files("regular.ttf"), "regular.eot", 400, normal);
-@include font-face("homeostasis", font-files("bold.ttf"), "bold.eot", 700, normal);
+@include font-face("homeostasis", url("font/regular.ttf"), url("font/regular.eot"), 400, normal);
+@include font-face("homeostasis", url("font/bold.ttf"), url("font/bold.eot"), 700, normal);
 
-body { background: #282828 url(/bg.png); font-size: 15px; margin: 0 0 4em;
+body { background: #282828 url(bg.png); font-size: 15px; margin: 0 0 4em;
   font-family: homeostasis, "trebuchet ms", sans-serif; color: #fff; }
 a { color: #3393E4; }
 a:hover { color: #fff;

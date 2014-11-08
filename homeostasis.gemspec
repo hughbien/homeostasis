@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Hugh Bien']
   s.email       = ['hugh@hughbien.com']
-  s.homepage    = 'https://github.com/hughbien/homeostasis'
+  s.homepage    = 'http://hughbien.com/homeostasis/'
   s.summary     = 'Stasis plugin for asset stamping and more.'
   s.description = 'Provides asset stamping using git revisions, ' +
                   'environments, and a few view helpers.'
