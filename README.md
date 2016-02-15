@@ -175,11 +175,16 @@ TODO
 ====
 
 * fix work on templates without front-matter yaml
-* fix directory structure to use standard gem directories
 * fix filenames like 'jquery-1.9.1.js'
-* fix `render` to work with Front/Multi plugins (maybe override Tilt#render? instead of using hooks)
 * fix images in RSS
-* fix plugin architecture to make each optional
+* fix Stasis' `render` to work with Front/Multi plugins (maybe override Tilt#render? instead of using hooks)
+* fix Asset plugin to provide asset helper method instead of global gsub
+* fix configurations to use config method instead of hashes (for more type checks)
+* fix Yaml front matter, don't parse if error (maybe warning instead?)
+* add standard gem directory structure
+* add plugin architecture to make each optional
+* add minification
+* add tilt 2.0 support
 
 License
 =======
